@@ -1,0 +1,359 @@
+config GST_PLUGINS_GOOD_DISABLE_ALPHA
+	prompt "disable dependency-less alpha plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_APETAG
+	prompt "disable dependency-less apetag plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_AUDIOFX
+	prompt "disable dependency-less audiofx plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_AUDIOPARSERS
+	prompt "disable dependency-less audioparsers plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_AUPARSE
+	prompt "disable dependency-less auparse plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_AUTODETECT
+	prompt "disable dependency-less autodetect plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_AVI
+	prompt "disable dependency-less avi plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_CUTTER
+	prompt "disable dependency-less cutter plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_DEBUGUTILS
+	prompt "disable dependency-less debugutils plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_DEINTERLACE
+	prompt "disable dependency-less deinterlace plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_DTMF
+	prompt "disable dependency-less dtmf plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_EFFECTV
+	prompt "disable dependency-less effectv plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_EQUALIZER
+	prompt "disable dependency-less equalizer plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_FLV
+	prompt "disable dependency-less flv plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_FLX
+	prompt "disable dependency-less flx plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_GOOM
+	prompt "disable dependency-less goom plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_GOOM2K1
+	prompt "disable dependency-less goom2k1 plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_ICYDEMUX
+	prompt "disable dependency-less icydemux plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_ID3DEMUX
+	prompt "disable dependency-less id3demux plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_IMAGEFREEZE
+	prompt "disable dependency-less imagefreeze plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_INTERLEAVE
+	prompt "disable dependency-less interleave plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_ISOMP4
+	prompt "disable dependency-less isomp4 plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_LAW
+	prompt "disable dependency-less law plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_LEVEL
+	prompt "disable dependency-less level plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_MATROSKA
+	prompt "disable dependency-less matroska plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_MONOSCOPE
+	prompt "disable dependency-less monoscope plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_MULTIFILE
+	prompt "disable dependency-less multifile plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_MULTIPART
+	prompt "disable dependency-less multipart plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_REPLAYGAIN
+	prompt "disable dependency-less replaygain plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_RTP
+	prompt "disable dependency-less rtp plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_RTPMANAGER
+	prompt "disable dependency-less rtpmanager plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_RTSP
+	prompt "disable dependency-less rtsp plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_SHAPEWIPE
+	prompt "disable dependency-less shapewipe plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_SMPTE
+	prompt "disable dependency-less smpte plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_SPECTRUM
+	prompt "disable dependency-less spectrum plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_UDP
+	prompt "disable dependency-less udp plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_VIDEOBOX
+	prompt "disable dependency-less videobox plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_VIDEOCROP
+	prompt "disable dependency-less videocrop plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_VIDEOFILTER
+	prompt "disable dependency-less videofilter plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_VIDEOMIXER
+	prompt "disable dependency-less videomixer plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_WAVENC
+	prompt "disable dependency-less wavenc plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_WAVPARSE
+	prompt "disable dependency-less wavparse plugin"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_Y4M
+	prompt "disable dependency-less y4m plugin"
+	bool
+	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_DIRECTSOUND
+#	prompt "disable DirectSound plug-in: directsoundsink"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_WAVEFORM
+#	prompt "disable Win32 WaveForm: waveformsink"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_OSS
+#	prompt "disable OSS audio: ossaudio"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_OSS4
+#	prompt "disable Open Sound System 4: oss4"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_SUNAUDIO
+#	prompt "disable Sun Audio: sunaudio"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_OSX_AUDIO
+#	prompt "disable OSX audio: osxaudio"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_OSX_VIDEO
+#	prompt "disable OSX video: osxvideosink"
+#	bool
+#	default n
+
+config GST_PLUGINS_GOOD_DISABLE_GST_V4L2
+	prompt "disable Video 4 Linux 2: video4linux2"
+	bool
+	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_X
+#	prompt "disable X libraries and plugins: ximagesrc"
+#	bool
+#	default n
+#
+#config GST_PLUGINS_GOOD_DISABLE_AALIB
+#	prompt "disable aalib ASCII Art library: aasink"
+#	bool
+#	default n
+#
+#config GST_PLUGINS_GOOD_DISABLE_AALIBTEST
+#	prompt "do not try to compile and run a test AALIB program"
+#	bool
+#	default n
+#
+config GST_PLUGINS_GOOD_DISABLE_CAIRO
+	prompt "disable Cairo graphics rendering and gobject bindings: cairo"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_FLAC
+	prompt "disable FLAC lossless audio: flac"
+	bool
+	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_GDK_PIXBUF
+#	prompt "disable GDK pixbuf: gdkpixbuf"
+#	bool
+#	default n
+
+config GST_PLUGINS_GOOD_DISABLE_JACK
+	prompt "disable Jack: jack"
+	bool
+	default n
+
+config GST_PLUGINS_GOOD_DISABLE_JPEG
+	prompt "disable jpeg library: jpeg"
+	bool
+	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_LIBCACA
+#	prompt "disable libcaca coloured ASCII art: cacasink"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_LIBDV
+#	prompt "disable libdv DV demuxer/decoder: dv"
+#	bool
+#	default n
+
+config GST_PLUGINS_GOOD_DISABLE_LIBPNG
+	prompt "disable Portable Network Graphics library: png"
+	bool
+	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_PULSE
+#	prompt "disable pulseaudio plug-in: pulseaudio"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_DV1394
+#	prompt "disable raw1394 and avc1394 library: 1394"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_SHOUT2
+#	prompt "disable Shoutcast/Icecast client library: shout2"
+#	bool
+#	default n
+
+config GST_PLUGINS_GOOD_DISABLE_SOUP
+	prompt "disable soup http client plugin (2.4): souphttpsrc"
+	bool
+	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_SPEEX
+#	prompt "disable speex speech codec: speex"
+#	bool
+#	default n
+
+config GST_PLUGINS_GOOD_DISABLE_TAGLIB
+	prompt "disable taglib tagging library: taglib"
+	bool
+	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_VPX
+#	prompt "disable VPX decoder: vpx"
+#	bool
+#	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_WAVPACK
+#	prompt "disable wavpack plug-in: wavpack"
+#	bool
+#	default n
+
+config GST_PLUGINS_GOOD_DISABLE_ZLIB
+	prompt "disable zlib support for qtdemux/matroska"
+	bool
+	default n
+
+#config GST_PLUGINS_GOOD_DISABLE_BZ2
+#	prompt "disable bz2 library for matroska"
+#	bool
+#	default n

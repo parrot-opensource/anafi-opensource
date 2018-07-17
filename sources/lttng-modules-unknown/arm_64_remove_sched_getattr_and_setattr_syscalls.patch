@@ -1,0 +1,43 @@
+--- lttng-modules-2.8.3/instrumentation/syscalls/headers/arm-64-syscalls-4.4.0_pointers.h	2016-10-13 16:20:22.000000000 +0200
++++ lttng-modules-2.8.3/instrumentation/syscalls/headers/arm-64-syscalls-4.4.0_pointers.h2	2016-11-10 16:04:12.354621023 +0100
+@@ -681,13 +681,6 @@
+ 	TP_FIELDS(sc_exit(ctf_integer(long, ret, ret)) sc_in(ctf_integer(int, fd, fd)) sc_in(ctf_integer(const char *, uargs, uargs)) sc_in(ctf_integer(int, flags, flags)))
+ )
+ #endif
+-#ifndef OVERRIDE_64_sched_setattr
+-SC_LTTNG_TRACEPOINT_EVENT(sched_setattr,
+-	TP_PROTO(sc_exit(long ret,) pid_t pid, struct sched_attr * uattr, unsigned int flags),
+-	TP_ARGS(sc_exit(ret,) pid, uattr, flags),
+-	TP_FIELDS(sc_exit(ctf_integer(long, ret, ret)) sc_inout(ctf_integer(pid_t, pid, pid)) sc_inout(ctf_integer(struct sched_attr *, uattr, uattr)) sc_inout(ctf_integer(unsigned int, flags, flags)))
+-)
+-#endif
+ #ifndef OVERRIDE_64_seccomp
+ SC_LTTNG_TRACEPOINT_EVENT(seccomp,
+ 	TP_PROTO(sc_exit(long ret,) unsigned int op, unsigned int flags, const char * uargs),
+@@ -933,13 +926,6 @@
+ 	TP_FIELDS(sc_exit(ctf_integer(long, ret, ret)) sc_in(ctf_integer(int, fd, fd)) sc_in(ctf_integer(struct mmsghdr *, mmsg, mmsg)) sc_in(ctf_integer(unsigned int, vlen, vlen)) sc_in(ctf_integer(unsigned int, flags, flags)))
+ )
+ #endif
+-#ifndef OVERRIDE_64_sched_getattr
+-SC_LTTNG_TRACEPOINT_EVENT(sched_getattr,
+-	TP_PROTO(sc_exit(long ret,) pid_t pid, struct sched_attr * uattr, unsigned int size, unsigned int flags),
+-	TP_ARGS(sc_exit(ret,) pid, uattr, size, flags),
+-	TP_FIELDS(sc_exit(ctf_integer(long, ret, ret)) sc_inout(ctf_integer(pid_t, pid, pid)) sc_inout(ctf_integer(struct sched_attr *, uattr, uattr)) sc_inout(ctf_integer(unsigned int, size, size)) sc_inout(ctf_integer(unsigned int, flags, flags)))
+-)
+-#endif
+ #ifndef OVERRIDE_64_io_getevents
+ SC_LTTNG_TRACEPOINT_EVENT(io_getevents,
+ 	TP_PROTO(sc_exit(long ret,) aio_context_t ctx_id, long min_nr, long nr, struct io_event * events, struct timespec * timeout),
+@@ -1639,12 +1625,6 @@
+ #ifndef OVERRIDE_TABLE_64_finit_module
+ TRACE_SYSCALL_TABLE(finit_module, finit_module, 273, 3)
+ #endif
+-#ifndef OVERRIDE_TABLE_64_sched_setattr
+-TRACE_SYSCALL_TABLE(sched_setattr, sched_setattr, 274, 3)
+-#endif
+-#ifndef OVERRIDE_TABLE_64_sched_getattr
+-TRACE_SYSCALL_TABLE(sched_getattr, sched_getattr, 275, 4)
+-#endif
+ #ifndef OVERRIDE_TABLE_64_renameat2
+ TRACE_SYSCALL_TABLE(renameat2, renameat2, 276, 5)
+ #endif

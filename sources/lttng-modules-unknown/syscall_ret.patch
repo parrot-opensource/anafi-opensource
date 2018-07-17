@@ -1,0 +1,11 @@
+diff -ru lttng-modules/lttng-modules-2.8.3/lttng-syscalls.c lttng-modules2/lttng-modules-2.8.3/lttng-syscalls.c
+--- lttng-modules-2.8.3/lttng-syscalls.c	2016-10-13 16:20:22.000000000 +0200
++++ lttng-modules-2.8.3/lttng-syscalls.c	2016-11-23 11:11:19.454468198 +0100
+@@ -526,6 +526,7 @@
+ 	size_t table_len;
+ 	long id;
+ 
++	ret = syscall_get_return_value(current, regs);
+ 	id = syscall_get_nr(current, regs);
+ 	if (unlikely(in_compat_syscall())) {
+ 		struct lttng_syscall_filter *filter;

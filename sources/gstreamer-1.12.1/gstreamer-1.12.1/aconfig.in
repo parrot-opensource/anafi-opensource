@@ -1,0 +1,4 @@
+config GSTREAMER_DISABLE_CHECK
+	prompt "disable building unit test libraries"
+	bool
+	default y

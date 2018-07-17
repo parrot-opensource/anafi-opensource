@@ -1,0 +1,8 @@
+menu "Video Parrot drivers"
+
+config VIDEO_SPIT
+	tristate "Spit"
+	help
+	  To manage video buffer exchange from ThreadX to Linux
+
+endmenu

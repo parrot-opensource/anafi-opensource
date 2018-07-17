@@ -1,0 +1,6 @@
+test-registry.*
+*.gcno
+*.gcda
+
+tools/.dirstamp
+tools/gstinspect

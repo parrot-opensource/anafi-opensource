@@ -1,0 +1,724 @@
+config GST_PLUGINS_BAD_DISABLE_ACCURIP
+	prompt "disable dependency-less accurip plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_ADPCMDEC
+	prompt "disable dependency-less adpcmdec plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_ADPCMENC
+	prompt "disable dependency-less adpcmenc plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_AIFF
+	prompt "disable dependency-less aiff plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VIDEOFRAME_AUDIOLEVEL
+	prompt "disable dependency-less videoframe_audiolevel plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_ASFMUX
+	prompt "disable dependency-less asfmux plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_AUDIOBUFFERSPLIT
+	prompt "disable dependency-less audiobuffersplit plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_AUDIOFXBAD
+	prompt "disable dependency-less audiofxbad plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_AUDIOMIXER
+	prompt "disable dependency-less audiomixer plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_AUDIOMIXMATRIX
+	prompt "disable dependency-less audiomixmatrix plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_COMPOSITOR
+	prompt "disable dependency-less compositor plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_AUDIOVISUALIZERS
+	prompt "disable dependency-less audiovisualizers plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_AUTOCONVERT
+	prompt "disable dependency-less autoconvert plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_BAYER
+	prompt "disable dependency-less bayer plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_CAMERABIN2
+	prompt "disable dependency-less camerabin2 plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_COLOREFFECTS
+	prompt "disable dependency-less coloreffects plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DEBUGUTILS
+	prompt "disable dependency-less debugutils plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DVBSUBOVERLAY
+	prompt "disable dependency-less dvbsuboverlay plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DVDSPU
+	prompt "disable dependency-less dvdspu plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FACEOVERLAY
+	prompt "disable dependency-less faceoverlay plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FESTIVAL
+	prompt "disable dependency-less festival plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FIELDANALYSIS
+	prompt "disable dependency-less fieldanalysis plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FREEVERB
+	prompt "disable dependency-less freeverb plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FREI0R
+	prompt "disable dependency-less frei0r plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_GAUDIEFFECTS
+	prompt "disable dependency-less gaudieffects plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_GEOMETRICTRANSFORM
+	prompt "disable dependency-less geometrictransform plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_GDP
+	prompt "disable dependency-less gdp plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_ID3TAG
+	prompt "disable dependency-less id3tag plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_INTER
+	prompt "disable dependency-less inter plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_INTERLACE
+	prompt "disable dependency-less interlace plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_IVFPARSE
+	prompt "disable dependency-less ivfparse plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_IVTC
+	prompt "disable dependency-less ivtc plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_JP2KDECIMATOR
+	prompt "disable dependency-less jp2kdecimator plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_JPEGFORMAT
+	prompt "disable dependency-less jpegformat plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_LIBRFB
+	prompt "disable dependency-less librfb plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MIDI
+	prompt "disable dependency-less midi plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MPEGDEMUX
+	prompt "disable dependency-less mpegdemux plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MPEGTSDEMUX
+	prompt "disable dependency-less mpegtsdemux plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MPEGTSMUX
+	prompt "disable dependency-less mpegtsmux plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MPEGPSMUX
+	prompt "disable dependency-less mpegpsmux plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MXF
+	prompt "disable dependency-less mxf plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_NETSIM
+	prompt "disable dependency-less netsim plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_ONVIF
+	prompt "disable dependency-less onvif plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_PCAPPARSE
+	prompt "disable dependency-less pcapparse plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_PNM
+	prompt "disable dependency-less pnm plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_RAWPARSE
+	prompt "disable dependency-less rawparse plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_REMOVESILENCE
+	prompt "disable dependency-less removesilence plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SDP
+	prompt "disable dependency-less sdp plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SEGMENTCLIP
+	prompt "disable dependency-less segmentclip plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SIREN
+	prompt "disable dependency-less siren plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SMOOTH
+	prompt "disable dependency-less smooth plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SPEED
+	prompt "disable dependency-less speed plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SUBENC
+	prompt "disable dependency-less subenc plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_STEREO
+	prompt "disable dependency-less stereo plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_TIMECODE
+	prompt "disable dependency-less timecode plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VIDEOFILTERS
+	prompt "disable dependency-less videofilters plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VIDEOPARSERS
+	prompt "disable dependency-less videoparsers plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VIDEOSIGNAL
+	prompt "disable dependency-less videosignal plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VMNC
+	prompt "disable dependency-less vmnc plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_Y4M
+	prompt "disable dependency-less y4m plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_YADIF
+	prompt "disable dependency-less yadif plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DIRECTSOUND
+	prompt "disable DirectSound: directsoundsrc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_WASAPI
+	prompt "disable WASAPI plug-in: wasapi"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DIRECT3D
+	prompt "disable Direct3D plug-in: direct3dsink"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_WINSCREENCAP
+	prompt "disable winscreencap plug-in: winscreencap"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_WINKS
+	prompt "disable Winks plug-in: winks"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_ANDROID_MEDIA
+	prompt "disable Android Media: androidmedia"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_APPLE_MEDIA
+	prompt "disable Apple video: applemedia"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_BLUEZ
+	prompt "disable Bluez: bluez"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_AVC
+	prompt "disable AVC Video Services: avcsrc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SHM
+	prompt "disable POSIX shared memory source and sink: shm"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VCD
+	prompt "disable Video CD: vcdsrc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_OPENSLES
+	prompt "disable OpenSL ES: opensl"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_UVCH264
+	prompt "disable UVC H264: uvch264"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_NVENC
+	prompt "disable NVIDIA Encode API: nvenc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_TINYALSA
+	prompt "disable tinyalsa: tinyalsa"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MSDK
+	prompt "disable Intel MediaSDK: msdk"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_ASSRENDER
+	prompt "disable ASS/SSA renderer: assrender"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VOAMRWBENC
+	prompt "disable vo-amrwbenc library: vo-amrwbenc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VOAACENC
+	prompt "disable vo-aacenc library: vo-aacenc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_BS2B
+	prompt "disable bs2b: bs2b"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_BZ2
+	prompt "disable bz2 library: bz2"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_CHROMAPRINT
+	prompt "disable chromaprint: chromaprint"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_CURL
+	prompt "disable Curl plugin: curl"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DASH
+	prompt "disable DASH plug-in: dash"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DC1394
+	prompt "disable libdc1394: dc1394"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DECKLINK
+	prompt "disable decklink: decklink"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DIRECTFB
+	prompt "disable directfb: dfbvideosink"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_WAYLAND
+	prompt "disable wayland sink: wayland"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_WEBP
+	prompt "disable WebP: webp"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DAALA
+	prompt "disable daala: daala"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DTS
+	prompt "disable dts library: dtsdec"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_RESINDVD
+	prompt "disable resindvd plugin: resindvd"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FAAC
+	prompt "disable AAC encoder plug-in: faac"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FAAD
+	prompt "disable FAAD2 AAC decoder plug-in: faad"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FBDEV
+	prompt "disable linux framebuffer: fbdevsink"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FDK_AAC
+	prompt "disable fdkaac plugin: fdkaac"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FLITE
+	prompt "disable Flite plugin: flite"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_GSM
+	prompt "disable GSM library: gsmenc gsmdec"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_FLUIDSYNTH
+	prompt "disable fluidsynth: fluidsynth"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_KATE
+	prompt "disable Kate: kate"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_KMS
+	prompt "disable drm/kms libraries: kms"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_LADSPA
+	prompt "disable ladspa: ladspa"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_LV2
+	prompt "disable lv2: lv2"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_LIBDE265
+	prompt "disable libde265 HEVC/H.265 decoder: libde265"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_LIBMMS
+	prompt "disable mms protocol library: libmms"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SRTP
+	prompt "disable srtp library: srtp"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DTLS
+	prompt "disable DTLS plugin: dtls"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_TTML
+	prompt "disable TTML plugin: ttml"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MODPLUG
+	prompt "disable modplug: modplug"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MPEG2ENC
+	prompt "disable mpeg2enc: mpeg2enc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MPLEX
+	prompt "disable mplex: mplex"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_MUSEPACK
+	prompt "disable musepackdec: musepack"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_NEON
+	prompt "disable neon http client plugins: neonhttpsrc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_OFA
+	prompt "disable ofa plugins: ofa"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_OPENAL
+	prompt "disable OpenAL plugin: openal"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_OPENCV
+	prompt "disable opencv plugins: opencv"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_OPENEXR
+	prompt "disable openexr library: openexr"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_OPENH264
+	prompt "disable openh264 library: openh264"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_OPENJPEG
+	prompt "disable openjpeg library: openjpeg"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_OPENNI2
+	prompt "disable openni2 library: openni2"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_OPUS
+	prompt "disable opus: opus"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_RSVG
+	prompt "disable rsvg decoder: rsvg"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_GL
+	prompt "disable gl elements: gl"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_GTK3
+	prompt "disable Gtk+ elements: gtk"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_QT
+	prompt "disable Qt elements: qt"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VULKAN
+	prompt "disable Vulkan elements: vulkan"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_TELETEXTDEC
+	prompt "disable Teletext decoder: teletextdec"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_WILDMIDI
+	prompt "disable wildmidi midi soft synth plugin: wildmidi"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SMOOTHSTREAMING
+	prompt "disable Smooth Streaming plug-in: smoothstreaming"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SNDFILE
+	prompt "disable sndfile plug-in: sfdec sfenc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SOUNDTOUCH
+	prompt "disable soundtouch plug-in: soundtouch"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SPC
+	prompt "disable spc decoder: spc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_GME
+	prompt "disable gme decoder: gme"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_DVB
+	prompt "disable DVB Source: dvb"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_ACM
+	prompt "disable Windows ACM library: acm"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_VDPAU
+	prompt "disable VDPAU: vdpau"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SBC
+	prompt "disable SBC bluetooth audio codec: sbc"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SCHRO
+	prompt "disable Schroedinger video codec: schro"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_ZBAR
+	prompt "disable ZBar barcode detector: zbar"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_RTMP
+	prompt "disable rtmp library: rtmp"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_SPANDSP
+	prompt "disable Spandsp: spandsp"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_HLS
+	prompt "disable http live streaming plugin: hls"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_X265
+	prompt "disable x265 plug-in: x265"
+	bool
+	default n
+
+config GST_PLUGINS_BAD_DISABLE_WEBRTCDSP
+	prompt "disable WebRTC Audio Processing: webrtcdsp"
+	bool
+	default n

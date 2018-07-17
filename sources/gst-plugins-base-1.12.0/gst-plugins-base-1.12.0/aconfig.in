@@ -1,0 +1,154 @@
+config GST_PLUGINS_BASE_DISABLE_ADDER
+	prompt "disable dependency-less adder plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_APP
+	prompt "disable dependency-less app plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_AUDIOCONVERT
+	prompt "disable dependency-less audioconvert plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_AUDIORATE
+	prompt "disable dependency-less audiorate plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_AUDIOTESTSRC
+	prompt "disable dependency-less audiotestsrc plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_ENCODING
+	prompt "disable dependency-less encoding plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_VIDEOCONVERT
+	prompt "disable dependency-less videoconvert plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_GIO
+	prompt "disable dependency-less gio plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_PLAYBACK
+	prompt "disable dependency-less playback plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_AUDIORESAMPLE
+	prompt "disable dependency-less audioresample plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_RAWPARSE
+	prompt "disable dependency-less rawparse plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_SUBPARSE
+	prompt "disable dependency-less subparse plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_TCP
+	prompt "disable dependency-less tcp plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_TYPEFIND
+	prompt "disable dependency-less typefind plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_VIDEOTESTSRC
+	prompt "disable dependency-less videotestsrc plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_VIDEORATE
+	prompt "disable dependency-less videorate plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_VIDEOSCALE
+	prompt "disable dependency-less videoscale plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_VOLUME
+	prompt "disable dependency-less volume plugin"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_ZLIB
+	prompt "disable zlib support for ID3 parsing in libgsttag"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_X
+	prompt "disable X libraries and plugins: ximagesink"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_XVIDEO
+	prompt "disable X11 XVideo extensions: xvimagesink"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_XSHM
+	prompt "disable X Shared Memory extension:"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_ALSA
+	prompt "disable ALSA: alsa"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_CDPARANOIA
+	prompt "disable CDParanoia: cdparanoia"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_IVORBIS
+	prompt "disable integer vorbis plug-in: ivorbisdec"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_LIBVISUAL
+	prompt "disable libvisual visualization library: libvisual"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_OGG
+	prompt "disable Xiph Ogg library: ogg"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_OPUS
+	prompt "disable opus: opus"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_PANGO
+	prompt "disable Pango font rendering: pango"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_THEORA
+	prompt "disable Xiph Theora video codec: theora"
+	bool
+	default n
+
+config GST_PLUGINS_BASE_DISABLE_VORBIS
+	prompt "disable Xiph Vorbis audio codec: vorbis"
+	bool
+	default n

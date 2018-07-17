@@ -1,0 +1,25 @@
+1. Adding the ulogger driver to an Android target
+-------------------------------------------------
+Assuming your Android kernel source path is $KERNEL, proceed as follows:
+$ mkdir ${KERNEL}/drivers/staging/ulogger
+$ cp Makefile ulogger.c ulogger.h ${KERNEL}/drivers/staging/ulogger/
+
+Then, edit ${KERNEL}/drivers/staging/Makefile and add the following line:
+obj-y += ulogger/
+
+
+2. Adding the ulogger driver to your Linux PC
+---------------------------------------------
+a) Install the package containing your current kernel headers.
+   For instance on Debian:
+   $ sudo apt-get install linux-headers-3.9-1-amd64
+   Your headers will typically reside in a /usr/src/linux-headers-xxx directory.
+
+b) Then, edit Makefile and change the line 'obj-y += ulogger.o' into
+   'obj-m += ulogger.o'.
+
+c) Compile the ulogger.ko module:
+   $ make -C <path_to_your_linux_headers> M=$(pwd) modules
+
+d) Load the driver:
+   $ sudo /sbin/insmod ulogger.ko

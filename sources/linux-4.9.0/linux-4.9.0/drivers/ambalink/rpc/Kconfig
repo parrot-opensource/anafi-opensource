@@ -1,0 +1,23 @@
+
+config AMBALINK_RPC
+        bool "AmbaLink RPC support"
+        depends on RPMSG
+        depends on AMBARELLA_RPROC
+        default y
+        help
+          AmbaLink Remote Procedure Call
+
+config AMBALINK_RFS
+        bool "AmbaLink RFS Support"
+        depends on RPMSG
+        default y
+        help
+          Enable RTOS to read/write ramfs through RPMSG
+
+config AMBALINK_VFFS
+        bool "AmbaLink FUSE VFFS"
+        depends on RPMSG
+        default n
+        help
+          A user space file system for RTOS accessing Linux, called FUSE VFFS.
+

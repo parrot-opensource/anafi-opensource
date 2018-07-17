@@ -1,0 +1,228 @@
+#
+# arch/arm/mach-ambarella/Kconfig
+#
+# History:
+#	2006/12/18 - [Charles Chiou] created file
+#
+# Copyright (C) 2004-2009, Ambarella, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+
+if ARCH_AMBARELLA
+comment "Ambarella Platform"
+
+config ARCH_AMBARELLA_SUPPORT_MMAP_AXI
+	bool
+	default n
+
+config ARCH_AMBARELLA_SUPPORT_MMAP_DRAMC
+	bool
+	default n
+
+config ARCH_AMBARELLA_SUPPORT_MMAP_DBGBUS
+	bool
+	default n
+
+choice
+	prompt "Chip REV"
+
+config ARCH_AMBARELLA_S2E
+	bool "S2E"
+	select CPU_V7
+	select HAVE_SMP
+	select HAVE_ARM_SCU if SMP
+	select ARM_ERRATA_754322
+	select ARM_ERRATA_764369 if SMP
+	select ARM_ERRATA_775420
+	select MIGHT_HAVE_CACHE_L2X0
+	select PL310_ERRATA_588369 if CACHE_PL310
+	select PL310_ERRATA_727915 if CACHE_PL310
+	select USB_ARCH_HAS_EHCI if USB_SUPPORT
+	select USB_ARCH_HAS_OHCI if USB_SUPPORT
+	select ARCH_AMBARELLA_SUPPORT_MMAP_AXI
+	select ARCH_AMBARELLA_SUPPORT_MMAP_DRAMC
+	select AMBARELLA_VIC
+	help
+	  Say Y here if you are using Ambarella S2E.
+
+config ARCH_AMBARELLA_S2L
+	bool "S2L"
+	select CPU_V7
+	select MIGHT_HAVE_CACHE_L2X0
+	select PL310_ERRATA_588369 if CACHE_PL310
+	select PL310_ERRATA_727915 if CACHE_PL310
+	select USB_ARCH_HAS_EHCI if USB_SUPPORT
+	select USB_ARCH_HAS_OHCI if USB_SUPPORT
+	select ARCH_AMBARELLA_SUPPORT_MMAP_AXI
+	select ARCH_AMBARELLA_SUPPORT_MMAP_DRAMC
+	select ARCH_AMBARELLA_SUPPORT_MMAP_DBGBUS
+	select AMBARELLA_VIC
+	help
+	  Say Y here if you are using Ambarella S2L.
+
+config ARCH_AMBARELLA_S3
+	bool "S3"
+	select CPU_V7
+	select HAVE_SMP
+	select HAVE_ARM_SCU if SMP
+	select ARM_ERRATA_764369 if SMP
+	select MIGHT_HAVE_CACHE_L2X0
+	select PL310_ERRATA_588369 if CACHE_PL310
+	select PL310_ERRATA_727915 if CACHE_PL310
+	select USB_ARCH_HAS_EHCI if USB_SUPPORT
+	select USB_ARCH_HAS_OHCI if USB_SUPPORT
+	select ARCH_AMBARELLA_SUPPORT_MMAP_AXI
+	select ARCH_AMBARELLA_SUPPORT_MMAP_DRAMC
+	select ARCH_AMBARELLA_SUPPORT_MMAP_DBGBUS
+	select AMBARELLA_VIC
+	select NET_VENDOR_AMBARELLA_ENHANCED if NET_VENDOR_AMBARELLA
+	help
+	  Say Y here if you are using Ambarella S3.
+
+config ARCH_AMBARELLA_S3L
+	bool "S3L"
+	select CPU_V7
+	select MIGHT_HAVE_CACHE_L2X0
+	select PL310_ERRATA_588369 if CACHE_PL310
+	select PL310_ERRATA_727915 if CACHE_PL310
+	select USB_ARCH_HAS_EHCI if USB_SUPPORT
+	select USB_ARCH_HAS_OHCI if USB_SUPPORT
+	select ARCH_AMBARELLA_SUPPORT_MMAP_AXI
+	select ARCH_AMBARELLA_SUPPORT_MMAP_DRAMC
+	select ARCH_AMBARELLA_SUPPORT_MMAP_DBGBUS
+	select AMBARELLA_VIC
+	help
+	  Say Y here if you are using Ambarella S3L.
+
+endchoice
+
+menu "Generic Platform Configuration"
+config AMBARELLA_RAW_BOOT
+	bool "Raw boot mode"
+	default n
+	help
+	  If you are not sure, say N here.
+
+config AMBARELLA_PMUSERENR_EN
+	bool "Enable userspcae access to PMU"
+	default n
+	help
+	  Enable userspcae access to PMU
+
+menu "Proc file system support"
+depends on PROC_FS
+
+config AMBARELLA_PLL_PROC
+	bool "Suport Ambarella PLL proc"
+	default n
+	---help---
+	  /proc/ambarella/clock
+
+	  If you are not sure, say N here.
+
+config AMBARELLA_SUPPORT_AMBENCH
+	bool "Suport Ambarella Test (ambench)"
+	default n
+	help
+	  /proc/ambarella/ambench
+
+	  If you are not sure, say N here.
+
+endmenu
+
+menu "Memory Configuration"
+
+config AMBARELLA_PPM_SIZE
+	hex "PPM SIZE"
+	default 0x00000000
+	range 0x00000000 0x10000000 if VMSPLIT_3G
+	range 0x00000000 0x20000000 if VMSPLIT_2G
+	range 0x00000000 0x60000000 if VMSPLIT_1G
+	help
+	  Specify the size from the start of physical DRAM address to reserve.
+
+config AMBARELLA_MEMORY_SIZE
+	hex "Default MEMORY SIZE"
+	depends on AMBARELLA_RAW_BOOT
+	default 0x08000000
+	range 0x04000000 0x40000000
+	help
+	  Specify the size of physical DRAM for debug.
+
+config AMBARELLA_ZRELADDR
+	hex "ZRELADDR"
+	default 0x00108000
+	help
+	  Specify the kernel entry point start physical address.
+
+config AMBARELLA_TEXTOFS
+	hex "TEXTOFS"
+	default 0x00108000
+	help
+	  Speicify the relative text offset.
+
+config AMBARELLA_PARAMS_PHYS
+	hex "PARAMS PHYS"
+	default 0x000c0000
+	help
+	  Specify the physical address for kernel parameters.
+
+config AMBARELLA_INITRD_PHYS
+	hex "INITRD PHYS"
+	default 0x00a00000
+	help
+	  Specify the physical address for initrd.
+
+config AMBARELLA_PPM_UNCACHED
+	bool "Map PPM as MT_DEVICE"
+	default n
+	help
+	  Default MT_MEMORY.
+
+endmenu
+
+config AMBARELLA_TIMER_HIGHRES
+	bool "High resolution timer wrapper Support"
+	default n
+	depends on HIGH_RES_TIMERS
+	help
+		Add high resolution timer wrapper for non-GPL
+
+config AMBARELLA_EXT_IRQ_NUM
+	int "External IRQ Num"
+	range 0 256
+	default 64
+	help
+	  Depends on your HW design.
+
+config AMBARELLA_EXT_GPIO_NUM
+	int "External GPIO Num"
+	range 0 256
+	default 64
+	help
+	  Depends on your HW design.
+
+config AMBARELLA_SREF_FIFO_EXEC
+	bool "Self refresh code executed in FIO fifo"
+	default n
+	depends on PLAT_AMBARELLA_SUPPORT_PM
+	help
+		Self refresh 2nd solution.
+
+endmenu
+
+endif
+

@@ -1,0 +1,79 @@
+#include <gst/gst.h>
+
+#include <gst/base/gstaggregator.h>
+#include <gst/audio/gstaudioaggregator.h>
+#include <gst/video/gstvideoaggregator.h>
+#include <gst/codecparsers/gsth264parser.h>
+#include <gst/codecparsers/gstmpegvideoparser.h>
+#include <gst/insertbin/gstinsertbin.h>
+#include <gst/mpegts/mpegts.h>
+#include <gst/gl/gl.h>
+#include <gst/player/player.h>
+
+gst_aggregator_get_type
+gst_aggregator_pad_get_type
+
+gst_audio_aggregator_get_type
+gst_audio_aggregator_pad_get_type
+
+gst_video_aggregator_get_type
+gst_video_aggregator_pad_get_type
+
+gst_mpegts_section_get_type
+gst_mpegts_section_type_get_type
+gst_mpegts_section_table_id_get_type
+
+gst_mpegts_descriptor_get_type
+gst_mpegts_cable_outer_fec_scheme_get_type
+gst_mpegts_modulation_type_get_type
+gst_mpegts_satellite_polarization_type_get_type
+gst_mpegts_satellite_rolloff_get_type
+gst_mpegts_dvb_code_rate_get_type
+gst_mpegts_descriptor_type_get_type
+gst_mpegts_iso639_audio_type_get_type
+gst_mpegts_running_status_get_type
+gst_mpegts_dvb_service_type_get_type
+gst_mpegts_stream_type_get_type
+
+
+gst_insert_bin_get_type
+
+
+gst_gl_allocation_params_get_type
+gst_gl_base_memory_allocator_get_type
+gst_gl_buffer_allocation_params_get_type
+gst_gl_buffer_allocator_get_type
+gst_gl_video_allocation_params_get_type
+gst_gl_memory_allocator_get_type
+gst_gl_memory_pbo_allocator_get_type
+gst_gl_renderbuffer_allocation_params_get_type
+gst_gl_renderbuffer_allocator_get_type
+gst_gl_base_filter_get_type
+gst_gl_buffer_pool_get_type
+gst_gl_color_convert_get_type
+gst_gl_context_get_type
+gst_gl_display_get_type
+gst_gl_filter_get_type
+gst_gl_framebuffer_get_type
+gst_gl_shader_get_type
+gst_glsl_stage_get_type
+gst_gl_overlay_compositor_get_type
+gst_gl_upload_get_type
+gst_gl_view_convert_get_type
+gst_gl_window_get_type
+
+gst_player_audio_info_get_type
+gst_player_color_balance_type_get_type
+gst_player_error_get_type
+gst_player_g_main_context_signal_dispatcher_get_type
+gst_player_get_type
+gst_player_media_info_get_type
+gst_player_signal_dispatcher_get_type
+gst_player_state_get_type
+gst_player_stream_info_get_type
+gst_player_subtitle_info_get_type
+gst_player_video_info_get_type
+gst_player_video_overlay_video_renderer_get_type
+gst_player_video_renderer_get_type
+gst_player_visualization_get_type
+

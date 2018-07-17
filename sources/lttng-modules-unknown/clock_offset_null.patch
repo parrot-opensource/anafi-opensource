@@ -1,0 +1,12 @@
+diff -ruN lttng-modules-2.8.3/lttng-events.c lttng-modules-2.8.3/lttng-events.c
+--- lttng-modules-2.8.3/lttng-events.c	2017-02-08 18:22:47.791982073 +0100
++++ lttng-modules-2.8.3/lttng-events.c	2017-02-08 18:22:43.803982073 +0100
+@@ -2051,6 +2051,8 @@
+ 	struct timespec rts = { 0, 0 };
+ 	unsigned long flags;
+ 
++	return 0;
++
+ 	/* Disable interrupts to increase correlation precision. */
+ 	local_irq_save(flags);
+ 	monotonic[0] = trace_clock_read64();

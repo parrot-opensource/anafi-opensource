@@ -1,0 +1,143 @@
+
+Copyright (C) 2016-2019, Ambarella, Inc.
+Author: Cao Rongrong <rrcao@ambarella.com>
+
+
+Introduction
+============
+
+Ambarella SoCs have a dedicated PIN for Infrared RC (Remote Control). If not
+used, this PIN can also be configured as GPIO.
+
+The IR module inside Ambarella SoCs consists of a 16-bit counter, driven at
+a rate of gclk_ir which is derived from OSC. Once the IR module is enabled,
+the counter will start to count. And when either rising edge or falling edge
+of the IR PIN is detected, the value of the counter is latched and put into
+the FIFO, and then the counter is reset and continues to count until next edge
+is detected. When the counter reaches 0xffff, it will stay at 0xffff instead
+of overflow.
+
+In other words, the data in the FIFO represents the number of clock cycles
+between signal edges of IR PIN.
+
+Unfortunately,
+1) There is no way to know the end of a IR frame.
+2) There is no way to know the polarity of the data in FIFO, i.e., we don't
+   know the the data is for PULSE, or for SPACE.
+
+Software has to handle these two hardware limitations above, and it's done in
+drivers, application will not be aware of it.
+
+
+-------+       +------------+       +----------
+       | pulse |   space    | pulse |
+       +-------+            +-------+
+
+
+
+Driver Configuration
+====================
+
+Device Drivers  --->
+         [M]  Multimedia support  --->
+                  [*]   Remote Controller support
+                  <M>   Compile Remote Controller keymap modules
+                  [*]   Remote controller decoders  --->
+                           <M>  Enable IR raw decoder for the NEC protocol
+                           <M>  Enable IR raw decoder for the RC-5 protocol
+                           <M>  Enable IR raw decoder for the RC6 protocol
+                           <M>  Enable IR raw decoder for the JVC protocol
+                           <M>  Enable IR raw decoder for the Sony protocol
+                           <M>  Enable IR raw decoder for the Sanyo protocol
+                           <M>  Enable IR raw decoder for the Sharp protocol
+                           <M>  Enable IR raw decoder for the MCE keyboard/mouse protocol
+                           <M>  Enable IR raw decoder for the XMP protocol
+                  [*]   Remote Controller devices  --->
+                           <M>  Ambarella IR remote control
+
+
+The module should be present in "drivers/media/rc/ir-ambarella.ko".
+
+
+
+Device Tree
+===========
+
+Please see Documentation/devicetree/bindings/arm/ambarella.txt - 26) - IR node
+
+
+
+Usage
+=====
+
+On loading the module(ir-ambarella.ko) you can see the rc device and input
+device are created:
+
+1) Input device
+root@/#cat /proc/bus/input/devices
+I: Bus=0019 Vendor=0001 Product=0001 Version=0100
+N: Name="ambarella-ir"
+P: Phys=ambarella-ir/input0
+S: Sysfs=/devices/virtual/rc/rc0/input0
+U: Uniq=
+H: Handlers=kbd event0
+B: PROP=0
+B: EV=100013
+B: KEY=1000000 80000 0 0 0
+B: MSC=10
+
+I: Bus=0000 Vendor=0000 Product=0000 Version=0000
+N: Name="MCE IR Keyboard/Mouse (ambarella-ir)"
+P: Phys=/input0
+S: Sysfs=/devices/virtual/input/input1
+U: Uniq=
+H: Handlers=kbd mouse0 event1
+B: PROP=0
+B: EV=100017
+B: KEY=30000 0 7 ff87207a c14057ff febeffdf ffefffff ffffffff fffffffe
+B: REL=3
+B: MSC=10
+
+2) RC device
+root@/#ls -p /sys/class/rc/rc0/
+input0/    power/     protocols  subsystem  uevent
+
+"protocols" contains the list of available IR protocols. Kernel has provided
+most of protocols in the world, but it cannot cover all, so if you need to work
+with a RC using special protocol, you have to implement it by yourself.
+
+root@/#cat /sys/class/rc/rc0/protocols
+other [unknown] rc-5 nec rc-6 jvc sony rc-5-sz sanyo sharp mce_kbd xmp
+
+You have to select a specific protocol that corresponds to the remote you
+intend to use. For example, if your remote control works with the "nec"
+protocol, you should configure it by:
+
+root@/#echo nec > /sys/class/rc/rc0/protocols
+
+Then you can run "evtest" to check if everything works, "evtest" will report
+events for key pressed that you do on your IR Remote Control.
+
+
+Note:
+
+1) if the key map is empty, evtest will only report key "Pressed" and key
+   "Released", but NOT report key "Repeat". So if you want to see the "Repeat"
+   Key, you have to setup the key map first.
+
+2) There is no such convient way to know the protocol used by your RC, but
+   maybe you can judge the protocol by the lead code. You can enable the debug
+   message by "echo N > /sys/module/rc_core/parameters/debug", N = 1 or 2
+
+
+
+Application
+===========
+
+A) Please refer to unit_test/linux/evtest
+B) LIRC (Linux Infrared Remote Control)
+   LIRC is an open source (GPL) package that allows users to receive and send
+   infrared signals with a Linux-based computer system and applications.
+   For details, please see http://www.lirc.org/
+
+

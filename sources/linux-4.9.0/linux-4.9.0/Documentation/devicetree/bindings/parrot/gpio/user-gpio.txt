@@ -1,0 +1,49 @@
+USER-GPIO exports GPIO to sysfs with a symlink
+
+required properties:
+- compatible: Should be "parrot,user-gpio"
+
+Each child node will represent a GPIO. The child node name is used
+to set the symlink name.
+
+required properties:
+- gpios: GPIO to export
+
+optional properties:
+ - output = <val>: to set it as output with default value
+	   if not present gpio as input
+ - debounce = <val>: debounce time is microseconds
+ - interrupt-edge-{both,rising,falling}: to enable specified interrupt
+	   type for gpio
+ - active-low: if gpio should be considered as active low
+
+Example:
+	user-gpio {
+		compatible = "parrot,user-gpio";
+
+		gnss_flash_n {
+			output = <0>;
+			gpios = <&gpio TEGRA_GPIO(H, 6) 0>;
+		};
+
+		gnss_rst_n {
+			output = <0>;
+			gpios = <&gpio TEGRA_GPIO(EE, 2) 0>;
+		};
+
+		wifi_rst_n {
+			output = <1>;
+			gpios = <&tca9539_74 9 0>;
+		};
+
+		wifi_en {
+			output = <1>;
+			gpios = <&tca9539_74 10 0>;
+		};
+
+		pwr_btn {
+			gpios = <&tca9539_74 11 0>;
+			active-low;
+			interrupt-edge-both;
+		}
+	};

@@ -1,0 +1,10 @@
+#
+# Industrial I/O subsystem configuration
+#
+menu "IIO Parrot drivers"
+	depends on IIO
+
+source "drivers/parrot/iio/bldc/Kconfig"
+source "drivers/parrot/iio/amba_a9s_adc/Kconfig"
+
+endmenu

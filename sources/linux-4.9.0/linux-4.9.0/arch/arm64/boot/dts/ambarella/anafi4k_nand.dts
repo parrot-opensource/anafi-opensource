@@ -1,0 +1,302 @@
+/*
+ * Copyright (C) 2013 Ambarella,Inc. - http://www.ambarella.com/
+ * Author: Cao Rongrong <rrcao@ambarella.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+/dts-v1/;
+
+/include/ "ambarella-h22-ambalink.dtsi"
+
+/ {
+	model = "anafi4k";
+	compatible = "parrot,anafi4k", "ambarella,s5l";
+
+	chosen {
+		stdout-path = "serial1:115200n8";
+	};
+
+	reserved-memory {
+		device_type = "reserved-memory";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		ramoops@0x7ff00000 {
+			compatible = "ramoops";
+			reg = <0x7ff00000 0x00100000>;
+			record-size = <0x00020000>;
+		};
+	};
+
+	apb@e8000000 {
+		uart0: uart@e8005000 {
+			status = "disabled";
+			/* amb,tx-fifo-fix; */
+		};
+
+		i2c0: i2c@e8003000 {
+			compatible = "threadx,i2c";
+			status = "ok";
+		};
+
+		i2c1: i2c@e8001000 {
+			status = "okay";
+			clock-frequency = <400000>;
+			mpsoc-i2c@08 {
+				status = "okay";
+				compatible = "parrot,mpsoc-i2c";
+				firmware-name = "BLDC.cyacd";
+				reg = <0x08>;
+				/* default spin dir for CY8C5266 (protoB1) with given silicon id 2e1cd069 */
+				spin_dir = <0x00>;
+				/* spin dir for CY8C5488 (<protoB1) with given silicon id 2e1d4069 */
+				spin_dir_2e1d4069 = <0x0A>;
+				lut = <0 1 2 3>;
+				reset-gpio = <&gpio 109 0>;
+			};
+			smartbattery@42 {
+				status = "okay";
+				compatible = "parrot,smartbattery";
+				firmware-name = "smartbattery.bin";
+				reg = <0x42>;
+			};
+		};
+
+		i2c2: i2c@e8007000 {
+			status = "okay";
+			clock-frequency = <400000>;
+
+			/* barometer */
+			lps22hb@5c {
+				status = "okay";
+				compatible = "st,lps22hb-press";
+				reg = <0x5c>;
+			};
+
+			/* magnetometer */
+			ak8963@0e {
+				status = "okay";
+				compatible = "ak8963";
+				reg = <0x0e>;
+				gpios = <&gpio 118 0x1>;
+				/*
+				 * 3D space rotation matrix to apply to correct
+				 * positional deviation from drone chassis
+				 */
+				mount-matrix =
+					"1.0", /* x0 */
+					"0.0", /* y0 */
+					"0.0",  /* z0 */
+					"0.0",  /* x1 */
+					"1.0",  /* y1 */
+					"0.0",  /* z1 */
+					"0.0",  /* x2 */
+					"0.0",  /* y2 */
+					"1.0";  /* z2 */
+			};
+		};
+
+		stepper@e8004000 {
+			compatible = "parrot,stepper";
+			reg = <0xe8004000 0x1000>;
+			status = "okay";
+		};
+
+		pwm@e8008000 {
+			status = "okay";
+			pinctrl-0 = <&pwm3_pins_c>;
+		};
+
+		rtc@e8015000 {
+			status = "disabled";
+		};
+
+		pinctrl: pinctrl@e8009000 {
+			gpio: gpio@0 {
+				amb,banks_irq_mask = <0xE>; /* enable group1 & group2 & group3 */
+				amb,banks_irq_affinity = "7", "2", "7", "2", "7"; /* group1 & group3 on cpu1 */
+			};
+		};
+
+		adc@e801d000 {
+			compatible = "parrot,adc";
+			period = <40>;
+			highfreq_channels = <0x02>;  /* channel 1 : US env channel */
+			lowfreq_channels = <0 2 3>; /* 3 channels are acquired at 1/3 nominal freq */
+			status = "okay";
+		};
+
+	};
+
+	ahb@e0000000 {
+		dma: dma@e0005000 {
+			/* enable dma if you need uart dma. */
+			status = "disabled";
+			amb,dma-startchannel = <2>;
+		};
+
+		uart1: uart@e0032000 {
+			status = "ok";
+			amb,msr-used;   /* use Modem Status Register */
+			pinctrl-0 = <&uart1_pins>;
+			/* amb,txdma-used; */
+			/* amb,rxdma-used; */
+			/* dmas = <&dma 8>, <&dma 9>; */
+			/* dma-names = "tx", "rx"; */
+		};
+
+		uart2: uart@e0033000 {
+			status = "ok";
+			amb,msr-used;	/* use Modem Status Register */
+			pinctrl-0 = <&uart2_pins_b>;
+			/* amb,txdma-used; */
+			/* amb,rxdma-used; */
+			/* dmas = <&dma 12>, <&dma 13>; */
+			/* dma-names = "tx", "rx"; */
+		};
+
+		sdmmc0@e0002000 {
+			status = "ok";
+			pwr-gpios = <&gpio 111 0x1>;
+			v18-gpios = <&gpio 0 0x1>;
+			amb,detail-delay = <0x6001>; /* ThreadX default value
+			                             * A new delay must be determined with sd_shmoo */
+			pinctrl-0 = <&sdmmc0_pins_4bit>;
+			bus-width = <4>;
+			amb,fixed-wp = <0>;
+			amb,fixed-cd = <1>;
+			broken-cd; /* enable polling */
+			disable-wp;
+		};
+
+		sdmmc2@e001f000 {
+			status = "ok";
+			/* pwr-gpios = <&gpio 112 0x1>; */
+			/* v18-gpios = <&gpio 7 0x1>; */
+			amb,rct-regmap = <&rct_syscon>;
+			pinctrl-0 = <&sdmmc2_pins_4bit>;
+			bus-width = <4>;
+			max-frequency = <128000000>;
+			amb,fixed-wp = <0>;
+			amb,fixed-cd = <1>;
+			broken-cd; /* enable polling */
+			disable-wp;
+			enable-sdio-wakeup;
+			voltage-ranges = <1800 1800 3300 3300>;
+			/* set non-removable ??? */
+		};
+
+		mac0: ethernet@e000e000 {
+			phy@0 {
+				reg = <0>;
+				amb,clk_invert;
+
+			};
+		};
+
+		spi0: spi@e0020000 {
+			status = "disabled";
+			cs-gpios = <&gpio 38 0>;
+
+			ambvin0@0 {
+				compatible = "ambarella,ambvin";
+				reg = <0>;
+				spi-max-frequency = <1000000>;
+				spi-cpha;
+				spi-cpol;
+			};
+		};
+
+		spi2: spi@e0022000 {
+			status = "ok";
+			cs-gpios = <&gpio 43 0>;
+
+			mpu6000@0 {
+				reg = <0>;
+				compatible = "mpu6000";
+				interrupt-parent = <&gpio>;
+				interrupts = <61 1>;
+				spi-max-frequency = <1000000>;
+				spi-cpha;
+				spi-cpol;
+				/*
+				 * 3D space rotation matrix to apply to correct
+				 * positional deviation from drone chassis
+				 */
+				mount-matrix =
+					 "0.0",  /* x0 */
+					 "-1.0", /* y0 */
+					 "0.0",  /* z0 */
+					 "-1.0", /* x1 */
+					 "0.0",  /* y1 */
+					 "0.0",  /* z1 */
+					 "0.0",  /* x2 */
+					 "0.0",  /* y2 */
+					 "-1.0"; /* z2 */
+			};
+		};
+	};
+
+	rct@ec170000 {
+		usbphy: usbphy@ec170050 {
+			/* high will trigger the ocp interrupt */
+			amb,ocp-polarity = <0>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&usb_host0_pins>;
+		};
+		reboot {
+			compatible = "ambarella,reboot";
+			status = "disabled";
+		};
+
+	};
+
+	user_gpio {
+		compatible = "parrot,user-gpio";
+		vbus_sel_gpio {
+			output = <0>;
+			gpios = <&gpio 106 0>;
+		};
+		gnss_rst {
+			output = <1>;
+			gpios = <&gpio 12 0>;
+		};
+		wifi_nrst {
+			output = <0>;
+			gpios = <&gpio 112 0>;
+		};
+		smartbattery_button {
+			gpios = <&gpio 68 0>;
+			active-low;
+			interrupt-edge-both;
+		};
+		smartbattery_reset {
+			output = <0>;
+			gpios = <&gpio 110 0>;
+		};
+	};
+
+	gpio-poweroff {
+		compatible = "gpio-poweroff";
+		gpios = <&gpio 66 0>;
+	};
+
+	gpio-restart {
+		compatible = "gpio-restart";
+		gpios = <&gpio 67 0>;
+	};
+
+	leds {
+		compatible = "pwm-leds";
+		status = "okay";
+		super_led {
+			label = "super_led";
+			pwms = <&pwm 3 60000 0>;
+			max-brightness = <255>;
+		};
+	};
+};
+

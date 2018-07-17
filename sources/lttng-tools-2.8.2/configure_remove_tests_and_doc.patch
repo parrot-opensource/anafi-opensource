@@ -1,0 +1,17 @@
+--- lttng-tools-2.8.2/Makefile.am	2016-11-03 16:10:16.785323474 +0100
++++ lttng-tools-2.8.2/Makefile.am2	2016-11-03 16:57:05.969296602 +0100
+@@ -1,12 +1,8 @@
+ ACLOCAL_AMFLAGS = -I m4
+ 
+-DIST_SUBDIRS = include src extras doc tests
++DIST_SUBDIRS = include src
+ 
+-SUBDIRS = include src doc tests
+-
+-if BUILD_EXTRAS
+-SUBDIRS += extras
+-endif
++SUBDIRS = include src
+ 
+ dist_doc_DATA = LICENSE \
+                 ChangeLog \

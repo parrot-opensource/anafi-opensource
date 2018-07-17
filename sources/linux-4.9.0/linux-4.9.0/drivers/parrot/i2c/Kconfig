@@ -1,0 +1,12 @@
+menu "I2C Parrot drivers"
+
+config I2C_THREADX
+	#THREADX-DEPENDS: CONFIG_PARROT_PSI2C=y
+	tristate "ThreadX shared I2C bus support (PSI2C)"
+	depends on ARCH_AMBARELLA
+	select I2C
+	help
+	  This driver allows to use an I2C bus managed by ThreadX, thanks to
+	  PS I2C rpmsg protocol.
+
+endmenu

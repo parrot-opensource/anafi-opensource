@@ -1,0 +1,149 @@
+--- htop-2.0.1.orig/configure.ac	2016-03-07 22:12:25.000000000 +0100
++++ htop-2.0.1/configure.ac	2016-04-20 12:51:42.626033269 +0200
+@@ -190,12 +190,10 @@
+          [AC_CHECK_HEADERS([ncurses/curses.h],[:],
+             [AC_CHECK_HEADERS([ncurses.h],[:],[missing_headers="$missing_headers $ac_header"])])])])
+ else
+-   HTOP_CHECK_SCRIPT([ncurses6], [refresh], [HAVE_LIBNCURSES], "ncurses6-config",
+-    HTOP_CHECK_SCRIPT([ncurses], [refresh], [HAVE_LIBNCURSES], "ncurses5-config",
+-     HTOP_CHECK_LIB([ncurses6],  [refresh], [HAVE_LIBNCURSES],
+-      HTOP_CHECK_LIB([ncurses],  [refresh], [HAVE_LIBNCURSES],
+-      missing_libraries="$missing_libraries libncurses"
+-   ))))
++   HTOP_CHECK_LIB([ncurses6],  [refresh], [HAVE_LIBNCURSES],
++    HTOP_CHECK_LIB([ncurses],  [refresh], [HAVE_LIBNCURSES],
++    missing_libraries="$missing_libraries libncurses"
++   ))
+    
+    AC_CHECK_HEADERS([curses.h],[:],
+       [AC_CHECK_HEADERS([ncurses/curses.h],[:],
+--- htop-2.0.1.orig/configure	2016-03-07 22:12:35.000000000 +0100
++++ htop-2.0.1/configure	2016-04-20 12:51:49.498191114 +0200
+@@ -13631,116 +13646,6 @@
+ 
+ else
+ 
+-   htop_config_script=$("ncurses6-config" --libs 2> /dev/null)
+-   htop_script_success=no
+-   htop_save_LDFLAGS="$LDFLAGS"
+-   if test ! "x$htop_config_script" = x; then
+-      LDFLAGS="$htop_config_script $LDFLAGS"
+-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for refresh in -lncurses6" >&5
+-$as_echo_n "checking for refresh in -lncurses6... " >&6; }
+-if ${ac_cv_lib_ncurses6_refresh+:} false; then :
+-  $as_echo_n "(cached) " >&6
+-else
+-  ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lncurses6  $LIBS"
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+-/* end confdefs.h.  */
+-
+-/* Override any GCC internal prototype to avoid an error.
+-   Use char because int might match the return type of a GCC
+-   builtin and then its argument prototype would still apply.  */
+-#ifdef __cplusplus
+-extern "C"
+-#endif
+-char refresh ();
+-int
+-main ()
+-{
+-return refresh ();
+-  ;
+-  return 0;
+-}
+-_ACEOF
+-if ac_fn_c_try_link "$LINENO"; then :
+-  ac_cv_lib_ncurses6_refresh=yes
+-else
+-  ac_cv_lib_ncurses6_refresh=no
+-fi
+-rm -f core conftest.err conftest.$ac_objext \
+-    conftest$ac_exeext conftest.$ac_ext
+-LIBS=$ac_check_lib_save_LIBS
+-fi
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ncurses6_refresh" >&5
+-$as_echo "$ac_cv_lib_ncurses6_refresh" >&6; }
+-if test "x$ac_cv_lib_ncurses6_refresh" = xyes; then :
+-
+-
+-$as_echo "#define HAVE_LIBNCURSES 1" >>confdefs.h
+-
+-         LIBS="$htop_config_script $LIBS "
+-         htop_script_success=yes
+-
+-fi
+-
+-      LDFLAGS="$save_LDFLAGS"
+-   fi
+-   if test "x$htop_script_success" = xno; then
+-
+-   htop_config_script=$("ncurses5-config" --libs 2> /dev/null)
+-   htop_script_success=no
+-   htop_save_LDFLAGS="$LDFLAGS"
+-   if test ! "x$htop_config_script" = x; then
+-      LDFLAGS="$htop_config_script $LDFLAGS"
+-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for refresh in -lncurses" >&5
+-$as_echo_n "checking for refresh in -lncurses... " >&6; }
+-if ${ac_cv_lib_ncurses_refresh+:} false; then :
+-  $as_echo_n "(cached) " >&6
+-else
+-  ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lncurses  $LIBS"
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+-/* end confdefs.h.  */
+-
+-/* Override any GCC internal prototype to avoid an error.
+-   Use char because int might match the return type of a GCC
+-   builtin and then its argument prototype would still apply.  */
+-#ifdef __cplusplus
+-extern "C"
+-#endif
+-char refresh ();
+-int
+-main ()
+-{
+-return refresh ();
+-  ;
+-  return 0;
+-}
+-_ACEOF
+-if ac_fn_c_try_link "$LINENO"; then :
+-  ac_cv_lib_ncurses_refresh=yes
+-else
+-  ac_cv_lib_ncurses_refresh=no
+-fi
+-rm -f core conftest.err conftest.$ac_objext \
+-    conftest$ac_exeext conftest.$ac_ext
+-LIBS=$ac_check_lib_save_LIBS
+-fi
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ncurses_refresh" >&5
+-$as_echo "$ac_cv_lib_ncurses_refresh" >&6; }
+-if test "x$ac_cv_lib_ncurses_refresh" = xyes; then :
+-
+-
+-$as_echo "#define HAVE_LIBNCURSES 1" >>confdefs.h
+-
+-         LIBS="$htop_config_script $LIBS "
+-         htop_script_success=yes
+-
+-fi
+-
+-      LDFLAGS="$save_LDFLAGS"
+-   fi
+-   if test "x$htop_script_success" = xno; then
+-
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for refresh in -lncurses6" >&5
+ $as_echo_n "checking for refresh in -lncurses6... " >&6; }
+ if ${ac_cv_lib_ncurses6_refresh+:} false; then :
+@@ -13838,10 +13743,6 @@
+ fi
+ 
+ 
+-   fi
+-
+-   fi
+-
+ 
+    for ac_header in curses.h
+ do :

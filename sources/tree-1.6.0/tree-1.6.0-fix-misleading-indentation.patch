@@ -1,0 +1,24 @@
+diff -ru tree-1.6.0-orig/color.c tree-1.6.0/color.c
+--- tree-1.6.0-orig/color.c
++++ tree-1.6.0/color.c
+@@ -235,8 +235,8 @@
+   
+   for(i=0;cmds[i].cmdnum;i++)
+     if (!strcmp(cmds[i].cmd,s)) return cmds[i].cmdnum;
+-    if (s[0] == '*') return DOT_EXTENSION;
+-    return ERROR;
++  if (s[0] == '*') return DOT_EXTENSION;
++  return ERROR;
+ }
+ 
+ int color(u_short mode, char *name, bool orphan, bool islink)
+@@ -489,7 +489,7 @@
+     for(linedraw=cstable;linedraw->name;++linedraw)
+       for(s=linedraw->name;*s;++s)
+ 	fprintf(stderr,"  %s\n",*s);
+-	return;
++    return;
+   }
+   if (charset) {
+     for(linedraw=cstable;linedraw->name;++linedraw)
+

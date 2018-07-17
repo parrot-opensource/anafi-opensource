@@ -1,0 +1,8 @@
+#
+# BLDC drivers
+#
+menu "BLDC Motor"
+
+source "drivers/parrot/iio/bldc/cypress/Kconfig"
+
+endmenu

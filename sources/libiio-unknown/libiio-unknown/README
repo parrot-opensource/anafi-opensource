@@ -1,0 +1,12 @@
+Library for interfacing with IIO devices
+
+This library is forked from the analogdevicesinc libiio:
+https://github.com/analogdevicesinc/libiio
+
+Parrot github repository (used for pull-requests) is located at:
+https://github.com/Parrot-Developers/libiio.git
+
+Branches organization:
+* upstream-master: upstream branch directly pushed from https://github.com/analogdevicesinc/libiio
+* github-master: upstream branch directly pushed from https://github.com/Parrot-Developers/libiio
+* master: parrot fork, mainly to include alchemy build system

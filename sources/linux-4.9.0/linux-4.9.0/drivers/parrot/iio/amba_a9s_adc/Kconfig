@@ -1,0 +1,27 @@
+config IIO_AMBA_A9S_ADC
+	tristate "Ambarella ADC driver"
+	depends on IIO_KFIFO_BUF  && (IIO_AMBA_A9S_ADC_RPMSG || IIO_AMBA_A9S_ADC_LOCAL)
+	help
+		Enable Ambarella/Parrot ADC driver
+choice
+	prompt "Ambarella ADC backend"
+
+config IIO_AMBA_A9S_ADC_RPMSG
+	#THREADX-DEPENDS: CONFIG_PARROT_ADC_DISABLED is not set
+	bool "ThreadX"
+	help
+		This backend delegates all the work to ThreadX core.
+
+config IIO_AMBA_A9S_ADC_LOCAL
+	#THREADX-DEPENDS: CONFIG_PARROT_ADC_DISABLED=y
+	bool "Linux stand-alone"
+	help
+		This backend executes all ADC commands locally, without relying on ThreadX.
+endchoice
+
+config IIO_AMBA_A9S_ADC_ENABLE_FIFO_BURST_READ
+	depends on IIO_AMBA_A9S_ADC_LOCAL
+	bool "Enable FIFO burst-read"
+  default n
+	help
+		Enable to read FIFO 32 entries at once, instead of reading entries one by one

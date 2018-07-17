@@ -1,0 +1,107 @@
+
+Release notes for GStreamer Good Plugins 1.12.1
+
+The GStreamer team is proud to announce the first bugfix release in the stable
+1.12 release series of your favourite cross-platform multimedia framework!
+
+
+This release only contains bugfixes and it is safe to update from 1.12.x. For a
+full list of bugfixes see Bugzilla.
+
+
+See /releases/1.12/ for the full release notes.
+
+
+"Such ingratitude.  After all the times I've saved your life."
+
+
+A collection of plugins you'd want to have right next to you on the
+battlefield.  Shooting sharp and making no mistakes, these plugins have it
+all: good looks, good code, and good licensing.  Documented and dressed up
+in tests.  If you're looking for a role model to base your own plugin on,
+here it is.
+
+
+If you find a plot hole or a badly lip-synced line of code in them,
+let us know - it is a matter of honour for us to ensure Blondie doesn't look
+like he's been walking 100 miles through the desert without water.
+
+
+This module contains a set of plugins that we consider to have good quality
+  code, correct functionality, our preferred license (LGPL for the plugin
+  code, LGPL or LGPL-compatible for the supporting library).
+We believe distributors can safely ship these plugins.
+People writing elements should base their code on these elements.
+
+
+Other modules containing plugins are:
+
+
+gst-plugins-base
+contains a basic set of well-supported plugins
+gst-plugins-ugly
+contains a set of well-supported plugins, but might pose problems for
+    distributors
+gst-plugins-bad
+contains a set of less supported plugins that haven't passed the
+    rigorous quality testing we expect, or are still missing documentation
+    and/or unit tests
+gst-libav
+contains a set of codecs plugins based on libav (formerly gst-ffmpeg)
+
+
+
+  
+
+Bugs fixed in this release
+     
+      * 782684 : qtmux: Do not check timecode data for mp4 container
+      * 783027 : aacparse: fix negotiation error when reusing element
+      * 783248 : rtpsession: print value of unknown RTCP Payload Type
+      * 783345 : rtph265depay: caps leak
+      * 783753 : splitmux: Drop allocation queries
+      * 783760 : wavparse: Processing wav file with blanck tag in metadata causes SIGSEGV
+
+==== Download ====
+
+You can find source releases of gst-plugins-good in the download
+directory: https://gstreamer.freedesktop.org/src/gst-plugins-good/
+
+The git repository and details how to clone it can be found at
+http://cgit.freedesktop.org/gstreamer/gst-plugins-good/
+
+==== Homepage ====
+
+The project's website is https://gstreamer.freedesktop.org/
+
+==== Support and Bugs ====
+
+We use GNOME's bugzilla for bug reports and feature requests:
+http://bugzilla.gnome.org/enter_bug.cgi?product=GStreamer
+
+Please submit patches via bugzilla as well.
+
+For help and support, please subscribe to and send questions to the
+gstreamer-devel mailing list (see below for details).
+
+There is also a #gstreamer IRC channel on the Freenode IRC network.
+
+==== Developers ====
+
+GStreamer is stored in Git, hosted at git.freedesktop.org, and can be cloned
+from there (see link above).
+
+Interested developers of the core library, plugins, and applications should
+subscribe to the gstreamer-devel list.
+
+        
+Contributors to this release
+    
+      * Dustin Spicuzza
+      * Juan Navarro
+      * Nirbheek Chauhan
+      * Sebastian Dröge
+      * Tim-Philipp Müller
+      * Vivia Nikolaidou
+      * vijay
+ 
