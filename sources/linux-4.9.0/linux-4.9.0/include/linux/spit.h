@@ -27,8 +27,8 @@ struct spit_cache {
 /* Stream IOCTLs for /dev/spitX */
 #define SPIT_IOCTL_NUM '~'
 #define SPIT_GET_FRAME _IOR(SPIT_IOCTL_NUM, 1, struct spit_frame_desc)
-#define SPIT_START_STREAM _IOW(SPIT_IOCTL_NUM, 2, enum spit_frame_type)
-#define SPIT_STOP_STREAM _IOW(SPIT_IOCTL_NUM, 3, enum spit_frame_type)
+#define SPIT_START_STREAM _IOW(SPIT_IOCTL_NUM, 2, enum spit_frame_types)
+#define SPIT_STOP_STREAM _IOW(SPIT_IOCTL_NUM, 3, enum spit_frame_types)
 #define SPIT_CONFIGURE_STREAM _IOW(SPIT_IOCTL_NUM, 4, struct spit_stream_conf)
 #define SPIT_GET_FIFO _IOR(SPIT_IOCTL_NUM, 5, struct spit_fifo)
 #define SPIT_SET_CACHE _IOW(SPIT_IOCTL_NUM, 6, struct spit_cache)
@@ -115,5 +115,8 @@ struct spit_cache {
 
 #define SPIT_CTRL_GET_LSC_TABLE \
 	_IOWR(SPIT_CTRL_IOCTL_NUM, 28, struct spit_lens_shading_maps)
+
+#define SPIT_CTRL_TAKE_DSP_LOCK _IO(SPIT_CTRL_IOCTL_NUM, 29)
+#define SPIT_CTRL_RELEASE_DSP_LOCK _IO(SPIT_CTRL_IOCTL_NUM, 30)
 
 #endif /* _SPIT_H_ */

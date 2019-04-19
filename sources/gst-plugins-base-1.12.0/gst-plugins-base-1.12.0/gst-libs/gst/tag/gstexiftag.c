@@ -266,6 +266,7 @@ EXIF_SERIALIZATION_DESERIALIZATION_FUNC (color_space);
 EXIF_SERIALIZATION_DESERIALIZATION_FUNC (focal_plane_resolution_unit);
 EXIF_SERIALIZATION_DESERIALIZATION_FUNC (light_source);
 
+EXIF_SERIALIZATION_FUNC (geo_satellites);
 EXIF_SERIALIZATION_FUNC (components_configuration);
 EXIF_SERIALIZATION_FUNC (date_time_offset);
 
@@ -282,6 +283,7 @@ EXIF_DESERIALIZATION_FUNC (add_to_pending_tags);
 #define EXIF_TAG_GPS_LONGITUDE 0x4
 #define EXIF_TAG_GPS_ALTITUDE_REF 0x5
 #define EXIF_TAG_GPS_ALTITUDE 0x6
+#define EXIF_TAG_GPS_SATELLITES 0x8
 #define EXIF_TAG_GPS_SPEED_REF 0xC
 #define EXIF_TAG_GPS_SPEED 0xD
 #define EXIF_TAG_GPS_TRACK_REF 0xE
@@ -380,7 +382,7 @@ static const GstExifTagMatch tag_map_ifd0[] = {
         serialize_orientation,
       deserialize_orientation},
   {GST_TAG_APPLICATION_NAME, EXIF_TAG_SOFTWARE, EXIF_TYPE_ASCII, 0, NULL, NULL},
-  {GST_TAG_DATE_TIME, EXIF_TAG_DATE_TIME, EXIF_TYPE_ASCII, NULL,
+  {GST_TAG_DATE_TIME, EXIF_TAG_DATE_TIME, EXIF_TYPE_ASCII, 0,
       serialize_date_time, deserialize_date_time},
   {GST_TAG_IMAGE_CHROMA_POSITIONING, EXIF_TAG_CHROMA_POSITIONING,
        EXIF_TYPE_SHORT, 0,
@@ -415,7 +417,7 @@ static const GstExifTagMatch tag_map_exif[] = {
   {NULL, EXIF_VERSION_TAG, EXIF_TYPE_UNDEFINED, 0, NULL, NULL},
   /* special case, because EXIF_TAG_OFFSET_TIME cannot be considered as
    * complementary tag for EXIF_TAG_DATE_TIME */
-  {GST_TAG_DATE_TIME, EXIF_TAG_OFFSET_TIME, EXIF_TYPE_ASCII, NULL,
+  {GST_TAG_DATE_TIME, EXIF_TAG_OFFSET_TIME, EXIF_TYPE_ASCII, 0,
       serialize_date_time_offset, NULL},
   {GST_TAG_DATE_TIME, EXIF_TAG_DATE_TIME_ORIGINAL, EXIF_TYPE_ASCII,
         EXIF_TAG_OFFSET_TIME_ORIGINAL, serialize_date_time,
@@ -442,12 +444,12 @@ static const GstExifTagMatch tag_map_exif[] = {
       NULL, NULL},
   {GST_TAG_APPLICATION_DATA, EXIF_TAG_MAKER_NOTE, EXIF_TYPE_UNDEFINED, 0, NULL,
       NULL},
-  {GST_TAG_TIME_MSECONDS, EXIF_TAG_SUBSEC_TIME, EXIF_TYPE_ASCII, NULL, NULL,
+  {GST_TAG_TIME_MSECONDS, EXIF_TAG_SUBSEC_TIME, EXIF_TYPE_ASCII, 0, NULL,
       NULL,},
-  {GST_TAG_TIME_MSECONDS, EXIF_TAG_SUBSEC_TIME_ORIGINAL, EXIF_TYPE_ASCII, NULL,
+  {GST_TAG_TIME_MSECONDS, EXIF_TAG_SUBSEC_TIME_ORIGINAL, EXIF_TYPE_ASCII, 0,
       NULL, NULL},
-  {GST_TAG_TIME_MSECONDS, EXIF_TAG_SUBSEC_TIME_DIGITIZED, EXIF_TYPE_ASCII,
-      NULL, NULL, NULL},
+  {GST_TAG_TIME_MSECONDS, EXIF_TAG_SUBSEC_TIME_DIGITIZED, EXIF_TYPE_ASCII, 0,
+      NULL, NULL},
   {NULL, EXIF_FLASHPIX_VERSION_TAG, EXIF_TYPE_UNDEFINED, 0, NULL, NULL},
   {GST_TAG_IMAGE_COLOR_SPACE, EXIF_TAG_COLOR_SPACE, EXIF_TYPE_SHORT, 0,
       serialize_color_space, deserialize_color_space},
@@ -515,6 +517,8 @@ static const GstExifTagMatch tag_map_gps[] = {
   {GST_TAG_GEO_LOCATION_HORIZONTAL_ERROR,
         EXIF_TAG_GPS_HORIZONTAL_POSITIONING_ERROR,
       EXIF_TYPE_RATIONAL, 0, NULL, NULL},
+  {GST_TAG_GEO_LOCATION_SATELLITES, EXIF_TAG_GPS_SATELLITES,
+      EXIF_TYPE_ASCII, 0, serialize_geo_satellites, NULL},
   {NULL, 0, 0, 0, NULL, NULL}
 };
 
@@ -2731,6 +2735,23 @@ reader_fail:
   return ret;
 }
 
+static void
+serialize_geo_satellites (GstExifWriter * writer, const GstTagList * taglist,
+    const GstExifTagMatch * exiftag)
+{
+  const GValue *value;
+  gchar *satellites;
+
+  value = gst_tag_list_get_value_index (taglist, exiftag->gst_tag, 0);
+  if (!value) {
+    GST_WARNING ("Failed to get gps satellites from tag list");
+    return;
+  }
+  satellites = g_strdup_printf ("%d", g_value_get_int (value));
+
+  write_exif_ascii_tag (writer, exiftag->exif_tag, satellites);
+  g_free (satellites);
+}
 
 static void
 serialize_speed (GstExifWriter * writer, const GstTagList * taglist,

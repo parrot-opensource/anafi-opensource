@@ -29,9 +29,7 @@
 
 #include "debug.h"
 
-#ifndef PLUGINS_DEFAULT_DIR
-#define PLUGINS_DEFAULT_DIR "/usr/lib/libiio-plugins/"
-#endif
+#define PLUGINS_DEFAULT_DIR "/usr/lib/libiio-plugins"
 
 #ifndef PLUGINS_MAX
 #define PLUGINS_MAX 4
@@ -63,7 +61,11 @@ void iio_init_plugins(void)
 		return;
 	plugins_initialized = true;
 
-	n = scandir(PLUGINS_DEFAULT_DIR, &namelist, pattern_filter, NULL);
+	const char* plugins_dir = getenv("IIO_PLUGINS_DIR");
+	if (!plugins_dir)
+		plugins_dir = PLUGINS_DEFAULT_DIR;
+
+	n = scandir(plugins_dir, &namelist, pattern_filter, NULL);
 	if (n == -1) {
 		DEBUG("%s scandir: %s\n", __func__, strerror(errno));
 		return;
@@ -71,8 +73,8 @@ void iio_init_plugins(void)
 
 	current_plugin = plugins;
 	for (i = 0; i < n; i++) {
-		ret = asprintf(&path, PLUGINS_DEFAULT_DIR "%s",
-				namelist[i]->d_name);
+		ret = asprintf(&path, "%s/%s",
+				plugins_dir, namelist[i]->d_name);
 		if (ret == -1) {
 			ERROR("%s asprintf error\n", __func__);
 			return;

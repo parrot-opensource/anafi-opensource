@@ -60,7 +60,7 @@
 			smartbattery@42 {
 				status = "okay";
 				compatible = "parrot,smartbattery";
-				firmware-name = "smartbattery.bin";
+				firmware-name = "naxos.bin";
 				reg = <0x42>;
 			};
 		};

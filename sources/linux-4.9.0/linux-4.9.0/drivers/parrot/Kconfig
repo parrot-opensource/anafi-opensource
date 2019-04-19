@@ -11,6 +11,5 @@ source "drivers/parrot/misc/Kconfig"
 source "drivers/parrot/stepper/Kconfig"
 source "drivers/parrot/video/Kconfig"
 source "drivers/parrot/wifi/Kconfig"
-source "drivers/parrot/smartbattery/Kconfig"
 
 endif #PARROT

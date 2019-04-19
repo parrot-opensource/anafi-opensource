@@ -25,6 +25,8 @@ struct spit_ctrl_devdata {
 	struct device		*dev;
 	struct mutex		 lock;
 	enum spit_control	 control;
+	struct file		*dsp_mode_lock_owner;
+	int			 dsp_mode_lock_count;
 	/* ThreadX rpmsg sync */
 	wait_queue_head_t	 ctrl_wait;
 	unsigned long		 wait_flags;
@@ -172,6 +174,15 @@ static int spit_ctrl_release(struct inode *inode, struct file *filp)
 	struct spit_ctrl_devdata *spit_ctrl_devdata =
 		(struct spit_ctrl_devdata *) filp->private_data;
 
+	mutex_lock(&spit_ctrl_devdata->lock);
+	if (spit_ctrl_devdata->dsp_mode_lock_owner == filp) {
+		dev_warn(spit_ctrl_devdata->dev,
+				"dsp lock not released: force release\n");
+		spit_ctrl_devdata->dsp_mode_lock_count = 0;
+		spit_ctrl_devdata->dsp_mode_lock_owner = NULL;
+	}
+	mutex_unlock(&spit_ctrl_devdata->lock);
+
 	atomic_dec(&spit_ctrl_devdata->opened);
 
 	return 0;
@@ -249,7 +260,7 @@ static long spit_ctrl_ioctl(struct file *filp, unsigned int req,
 		(struct spit_ctrl_devdata *) filp->private_data;
 	struct spit_rpmsg_control *resp;
 	struct spit_lens_shading_maps lsc_map = {0};
-	int ret;
+	int ret = 0;
 
 	if (!rp_device)
 		return -EAGAIN;
@@ -302,8 +313,15 @@ static long spit_ctrl_ioctl(struct file *filp, unsigned int req,
 		}
 		break;
 
-	case SPIT_CTRL_GET_DSP_MODE:
 	case SPIT_CTRL_SET_DSP_MODE:
+		mutex_lock(&spit_ctrl_devdata->lock);
+		if (spit_ctrl_devdata->dsp_mode_lock_owner != filp)
+			ret = -EACCES;
+		mutex_unlock(&spit_ctrl_devdata->lock);
+		if (ret)
+			return ret;
+		/* PASSTHROUGH */
+	case SPIT_CTRL_GET_DSP_MODE:
 		/* Send request and wait dsp mode switch */
 		ret = spit_send_request(spit_ctrl_devdata, arg,
 				      sizeof(enum spit_dsp_mode),
@@ -586,6 +604,33 @@ static long spit_ctrl_ioctl(struct file *filp, unsigned int req,
 			return -EFAULT;
 		}
 		break;
+
+	case SPIT_CTRL_TAKE_DSP_LOCK:
+		mutex_lock(&spit_ctrl_devdata->lock);
+		if (!spit_ctrl_devdata->dsp_mode_lock_owner) {
+			spit_ctrl_devdata->dsp_mode_lock_owner = filp;
+			spit_ctrl_devdata->dsp_mode_lock_count++;
+		} else {
+			if (spit_ctrl_devdata->dsp_mode_lock_owner == filp)
+				spit_ctrl_devdata->dsp_mode_lock_count++;
+			else
+				ret = -EBUSY;
+		}
+
+		mutex_unlock(&spit_ctrl_devdata->lock);
+		return ret;
+
+	case SPIT_CTRL_RELEASE_DSP_LOCK:
+		mutex_lock(&spit_ctrl_devdata->lock);
+		if (spit_ctrl_devdata->dsp_mode_lock_owner == filp) {
+			spit_ctrl_devdata->dsp_mode_lock_count--;
+			if (!spit_ctrl_devdata->dsp_mode_lock_count)
+				spit_ctrl_devdata->dsp_mode_lock_owner = NULL;
+		} else {
+			ret = -EPERM;
+		}
+		mutex_unlock(&spit_ctrl_devdata->lock);
+		return ret;
 
 	default:
 		dev_err(spit_ctrl_devdata->dev, "unknown control command\n");

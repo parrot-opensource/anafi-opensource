@@ -501,6 +501,8 @@ __exif_tag_capturing_light_source_to_exif_value (const gchar * str)
     return 14;
   else if (strcmp (str, "white-fluorescent") == 0)
     return 15;
+  else if (strcmp (str, "warm-white-fluorescent") == 0)
+    return 16;
   else if (strcmp (str, "standard-light-a") == 0)
     return 17;
   else if (strcmp (str, "standard-light-b") == 0)
@@ -553,6 +555,8 @@ __exif_tag_capturing_light_source_from_exif_value (gint value)
     return "cool-white-fluorescent";
   case 15:
     return "white-fluorescent";
+  case 16:
+    return "warm-white-fluorescent";
   case 17:
     return "standard-light-a";
   case 18:

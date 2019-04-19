@@ -8,4 +8,3 @@ obj-y += iio/
 obj-y += misc/
 obj-y += stepper/
 obj-y += video/
-obj-y += smartbattery/

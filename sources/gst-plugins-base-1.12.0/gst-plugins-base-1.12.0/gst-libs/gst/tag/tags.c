@@ -276,6 +276,9 @@ gst_tag_register_tags_internal (gpointer unused)
       G_TYPE_DOUBLE, _("geo-accuracy-vertical"), _("GPS Vertical accuracy"),
       NULL);
 
+  gst_tag_register_static (GST_TAG_GEO_LOCATION_SATELLITES, GST_TAG_FLAG_META,
+      G_TYPE_INT, _("geo-satellites-count"), _("GPS Satellites count"), NULL);
+
   gst_tag_register_static (GST_TAG_CAMERA_ROLL, GST_TAG_FLAG_META,
       G_TYPE_FLOAT, _("camera-roll"), _("Camera roll angle in NED"), NULL);
 

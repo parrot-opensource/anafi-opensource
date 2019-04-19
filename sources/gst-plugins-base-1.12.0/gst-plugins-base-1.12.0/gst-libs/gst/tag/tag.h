@@ -259,6 +259,7 @@ G_BEGIN_DECLS
  *   "day-white-fluorescent"
  *   "cool-white-fluorescent"
  *   "white-fluorescent"
+ *   "warm-white-fluorescent"
  *   "standard-light-a"
  *   "standard-light-b"
  *   "standard-light-c"
@@ -538,6 +539,13 @@ G_BEGIN_DECLS
  * GPS vertical accuracy (in meters)
  */
 #define GST_TAG_GEO_ACCURACY_VERTICAL "geo-accuracy-vertical"
+
+/**
+ * GST_TAG_GEO_LOCATION_SATELLITES:
+ *
+ * The number of GPS Satellites used for measurement. (integer)
+ */
+#define GST_TAG_GEO_LOCATION_SATELLITES "geo-satellites-count"
 
 /**
  * GST_TAG_CAMERA_ROLL:
