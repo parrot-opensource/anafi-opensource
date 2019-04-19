@@ -165,9 +165,19 @@ struct spit_frame_desc {
 	uint64_t data;
 	uint32_t size;
 	uint32_t checksum;
-	/* H264 specific */
-	uint64_t h264_timestamp;
-	enum spit_h264_frame_type h264_frame_type;
+	union {
+		struct {
+			uint64_t h264_timestamp;
+			enum spit_h264_frame_type h264_frame_type;
+		};
+		struct {
+			enum spit_raw_format format;
+			uint16_t width;
+			uint16_t height;
+			uint32_t uv_offset;
+			uint16_t stride;
+		};
+	};
 };
 
 enum spit_buffer_fifo_flags {
@@ -304,6 +314,11 @@ struct spit_input_status {
 				      *   stream must be stopped when an error
 				      *   has occurred.
 				      */
+	uint32_t offset; /*!< Offset in input FIFO where to write next data: if
+			  *   the address passed for frame feeding doesn't have
+			  *   the same offset in the FIFO, the feed will be
+			  *   refused.
+			  */
 	uint32_t free_size; /*!< Free size available in the input FIFO buffer */
 };
 
@@ -432,18 +447,22 @@ struct spit_ae_info {
 	float    roi_x; /*!< Current ROI center on x-axis, relative to
 				     *  streaming image width.
 				     *  Value is between 0 and 1.0
+				     *  Negative value means ROI is disabled.
 				     */
 	float    roi_y; /*!< Current ROI center on y-axis, relative to
 				     *  streaming image height.
 				     *  Value is between 0 and 1.0
+				     *  Negative value means ROI is disabled.
 				     */
 	float    roi_width; /*!< Current ROI width (Read-only), relative to
 				     *  streaming image width.
 				     *  Value is between 0 and 1.0
+				     *  Negative value means ROI is disabled.
 				     */
 	float    roi_height; /*!< Current ROI height (Read-only), relative to
 				     *  streaming image height.
 				     *  Value is between 0 and 1.0
+				     *  Negative value means ROI is disabled.
 				     */
 };
 
@@ -463,6 +482,7 @@ enum spit_awb_mode {
 	SPIT_AWB_MODE_FLUORESCENT_4,
 	SPIT_AWB_MODE_WATER,
 	SPIT_AWB_MODE_OUTDOOR,
+	SPIT_AWB_MODE_LOCK,
 
 	SPIT_AWB_MODE_COUNT,
 	SPIT_AWB_MODE_FORCE_ENUM = 0xffffffff,
@@ -477,6 +497,8 @@ struct spit_awb_info {
 enum spit_img_style {
 	SPIT_IMG_STYLE_STANDARD = 0,
 	SPIT_IMG_STYLE_PLOG,
+	SPIT_IMG_STYLE_INTENSE,
+	SPIT_IMG_STYLE_PASTEL,
 
 	SPIT_IMG_STYLE_COUNT,
 	SPIT_IMG_STYLE_FORCE_ENUM = 0xffffffff,
@@ -486,7 +508,7 @@ struct spit_img_settings {
 	uint32_t saturation; /*!< Saturate / desaturate image
 			      * From 0 to 256 (default at 64) */
 	float sharpness; /*!< Increase / decrease sharpness
-			     * From 0.5 to 2 (default at 1) */
+			     * From 0.5 to 2.0 (default at 1.0) */
 	uint32_t contrast; /*!< Increase / decrease contrast
 			    * From 0 to 256 (default at 64) */
 };
@@ -526,6 +548,14 @@ struct spit_bracketing_cfg {
 
 struct spit_burst_cfg {
 	uint8_t count; /*!< Number of frame to be captured (0: disabled) */
+};
+
+struct spit_lens_shading_maps {
+	uint16_t pixel_count; /*!< Number of pixels in each map */
+	uint64_t red_gain_map; /*!< Pointer to the red gain array */
+	uint64_t green_even_gain_map; /*!< Pointer to the green_even gain array */
+	uint64_t green_odd_gain_map; /*!< Pointer to the green_odd gain array */
+	uint64_t blue_gain_map; /*!< Pointer to the blue gain array */
 };
 
 /*
@@ -643,6 +673,7 @@ enum spit_error {
 	SPIT_ERROR_BAD_FPS,
 	SPIT_ERROR_QUEUE_FULL,
 	SPIT_ERROR_INVALID_FRAME,
+	SPIT_ERROR_BAD_SIZE,
 
 	SPIT_ERROR_FORCE_ENUM = 0xffffffff,
 };
@@ -679,6 +710,7 @@ const struct {\
 	{SPIT_ERROR_BAD_FPS, "bad frame rate"},\
 	{SPIT_ERROR_QUEUE_FULL, "queue is full"},\
 	{SPIT_ERROR_INVALID_FRAME, "invalid frame"},\
+	{SPIT_ERROR_BAD_SIZE, "bad size"},\
 }
 
 /*

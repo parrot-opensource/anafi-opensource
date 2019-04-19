@@ -471,8 +471,38 @@ G_BEGIN_DECLS
  *   "Single"
  *   "Burst"
  *   "Bracketing"
+ *   "GPSLapse"
+ *   "TimeLapse"
+ *   "Panorama"
  */
 #define GST_TAG_PHOTO_MODE                         "photo-mode"
+
+/**
+ * GST_TAG_PHOTO_PANORAMA_TYPE:
+ *
+ * The panorama type in which the photo have been captured. (string)
+ *
+ * Allowed values:
+ *  "spherical"
+ *  "vertical-180"
+ *  "horizontal-180"
+ */
+#define GST_TAG_PHOTO_PANORAMA_TYPE                "panorama-type"
+
+/**
+ * GST_TAG_PHOTO_SEQUENCE_NUMBER:
+ *
+ * The sequence number of the photo in case of grouped photos. (integer)
+ */
+#define GST_TAG_PHOTO_SEQUENCE_NUMBER              "sequence-number"
+
+/**
+ * GST_TAG_PHOTO_COUNT:
+ *
+ * The total number of photos in a serie of grouped photos. (integer)
+ */
+#define GST_TAG_PHOTO_COUNT                        "photo-count"
+
 
 /**
  * GST_TAG_DRONE_ROLL:
@@ -496,6 +526,20 @@ G_BEGIN_DECLS
 #define GST_TAG_DRONE_YAW "drone-yaw"
 
 /**
+ * GST_TAG_GEO_ACCURACY_HORIZONTAL:
+ *
+ * GPS horizontal accuracy (in meters)
+ */
+#define GST_TAG_GEO_ACCURACY_HORIZONTAL "geo-accuracy-horizontal"
+
+/**
+ * GST_TAG_GEO_ACCURACY_VERTICAL:
+ *
+ * GPS vertical accuracy (in meters)
+ */
+#define GST_TAG_GEO_ACCURACY_VERTICAL "geo-accuracy-vertical"
+
+/**
  * GST_TAG_CAMERA_ROLL:
  *
  * Camera body roll (phi) angle in NED frame
@@ -508,6 +552,13 @@ G_BEGIN_DECLS
  * Camera body pitch (theta) angle in NED frame
  */
 #define GST_TAG_CAMERA_PITCH "camera-pitch"
+
+/**
+ * GST_TAG_ABOVE_TAKEOFF_ALTITUDE:
+ *
+ * Altitude above take-off in meters
+ */
+#define GST_TAG_ABOVE_TAKEOFF_ALTITUDE "above-takeoff-altitude"
 
 /**
  * GST_TAG_CAMERA_YAW:

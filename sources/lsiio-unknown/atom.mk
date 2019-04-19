@@ -34,3 +34,11 @@ LOCAL_SRC_FILES := iio_event_monitor.c iio_utils.c
 LOCAL_LIBRARIES := linux
 
 include $(BUILD_EXECUTABLE)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := iio_dump_sensors
+LOCAL_DESCRIPTION := Log all sensors to files
+LOCAL_CATEGORY_PATH := utils/iio
+LOCAL_COPY_FILES := iio_dump_sensors.sh:usr/bin/iio_dump_sensors
+include $(BUILD_CUSTOM)

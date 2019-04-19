@@ -71,6 +71,7 @@ static const gchar *schema_list[] = {
   "photoshop",
   "Iptc4xmpCore",
   "Iptc4xmpExt",
+  "Camera",
   "drone-parrot",
   NULL
 };
@@ -994,6 +995,14 @@ serialize_angle (const GValue * value)
   return g_strdup_printf ("%f", angle);
 }
 
+inline static gchar *
+serialize_angle_pix4d_pitch (const GValue * value)
+{
+  gfloat angle;
+  angle = g_value_get_float (value) + 90.0;
+  return g_strdup_printf ("%f", angle);
+}
+
 static void
 deserialize_angle (XmpTag * xmptag, GstTagList * taglist,
     const gchar * gst_tag, const gchar * xmp_tag, const gchar * str,
@@ -1004,6 +1013,27 @@ deserialize_angle (XmpTag * xmptag, GstTagList * taglist,
   /* get the angle */
   if (sscanf (str, "%f", &angle) != 1)
     goto error;
+
+  gst_tag_list_add (taglist, xmp_tag_get_merge_mode (xmptag), gst_tag, angle,
+      NULL);
+  return;
+
+error:
+  GST_WARNING ("Failed to deserialize angle: %s", str);
+}
+
+static void
+deserialize_angle_pix4d_pitch (XmpTag * xmptag, GstTagList * taglist,
+    const gchar * gst_tag, const gchar * xmp_tag, const gchar * str,
+    GSList ** pending_tags)
+{
+  gfloat angle;
+
+  /* get the angle */
+  if (sscanf (str, "%f", &angle) != 1)
+    goto error;
+
+  angle -= 90.0;
 
   gst_tag_list_add (taglist, xmp_tag_get_merge_mode (xmptag), gst_tag, angle,
       NULL);
@@ -1144,6 +1174,29 @@ _init_xmp_tag_map (gpointer user_data)
   _gst_xmp_schema_add_mapping (schema, xmpinfo);
   _gst_xmp_add_schema ("Iptc4xmpExt", schema);
 
+  /* Camera schema */
+  schema = gst_xmp_schema_new ();
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_CAMERA_ROLL,
+      "Camera:Roll", GstXmpTagTypeSimple, serialize_angle,
+      deserialize_angle);
+  /*
+   * Using specific serialization function because when camera is nadir, pitch
+   * is -90 in our referential but 0 in Pix4D's
+   */
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_CAMERA_PITCH,
+      "Camera:Pitch", GstXmpTagTypeSimple, serialize_angle_pix4d_pitch,
+      deserialize_angle_pix4d_pitch);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_CAMERA_YAW,
+      "Camera:Yaw", GstXmpTagTypeSimple, serialize_angle,
+      deserialize_angle);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_GEO_ACCURACY_HORIZONTAL,
+      "Camera:GPSXYAccuracy", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_GEO_ACCURACY_VERTICAL,
+      "Camera:GPSZAccuracy", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_ABOVE_TAKEOFF_ALTITUDE,
+      "Camera:AboveGroundAltitude", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_add_schema ("Camera", schema);
+
   /* drone parrot schema */
   schema = gst_xmp_schema_new ();
   _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_DRONE_ROLL,
@@ -1181,6 +1234,12 @@ _init_xmp_tag_map (gpointer user_data)
       "drone-parrot:BootId", GstXmpTagTypeSimple, NULL, NULL);
   _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PHOTO_MODE,
       "drone-parrot:PhotoMode", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PHOTO_PANORAMA_TYPE,
+      "drone-parrot:PanoramaType", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PHOTO_SEQUENCE_NUMBER,
+      "drone-parrot:SequenceNumber", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PHOTO_COUNT,
+      "drone-parrot:PhotoCount", GstXmpTagTypeSimple, NULL, NULL);
   _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_CAPTURING_TS,
       "drone-parrot:CaptureTsUs", GstXmpTagTypeSimple, NULL, NULL);
   _gst_xmp_add_schema ("drone-parrot", schema);
@@ -1220,6 +1279,8 @@ static const GstXmpNamespaceMatch ns_match[] = {
   {"Iptc4xmpExt", "http://iptc.org/std/Iptc4xmpExt/2008-02-29/",
       "xmlns:LocationDetails=\"http://iptc.org/std/Iptc4xmpExt/2008-02-29/LocationDetails/\""},
   {"drone-parrot", "http://www.parrot.com/drone-parrot/1.0/", NULL},
+  {"Camera", "https://support.pix4d.com/hc/en-us/articles/205732309-EXIF-and-XMP-tag-information-read-by-Pix4D-Desktop",
+      NULL},
   {NULL, NULL, NULL}
 };
 
@@ -1333,6 +1394,8 @@ gst_tag_list_from_xmp_buffer (GstBuffer * buffer)
     {"Iptc4xmpExt", NULL}
     ,
     {"drone-parrot", NULL}
+    ,
+    {"Camera", NULL}
     ,
     {NULL, NULL}
   };

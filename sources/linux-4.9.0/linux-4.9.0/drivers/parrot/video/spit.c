@@ -793,6 +793,13 @@ static long spit_ioctl(struct file *filp, unsigned int req,
 			offset -= map->size;
 		spit_set_frame_data(&frame_desc, map->paddr + offset);
 
+		/* Check offset in input FIFO buffer */
+		if (offset != spit_devdata->input_status.offset) {
+			dev_err(spit_devdata->dev, "invalid offset in FIFO\n");
+			mutex_unlock(&spit_devdata->lock);
+			return -EINVAL;
+		}
+
 		/* Update free size in input status */
 		spit_devdata->input_status.free_size -= frame_desc.size;
 

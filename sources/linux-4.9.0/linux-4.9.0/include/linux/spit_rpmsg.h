@@ -156,6 +156,7 @@ enum spit_rpmsg_control_type {
 	SPIT_RPMSG_CONTROL_TYPE_REQ_GET_BURST_CONFIG,
 	SPIT_RPMSG_CONTROL_TYPE_REQ_GET_IMAGE_STYLE,
 	SPIT_RPMSG_CONTROL_TYPE_REQ_SET_IMAGE_STYLE,
+	SPIT_RPMSG_CONTROL_TYPE_REQ_GET_LENS_SHADING,
 	SPIT_RPMSG_CONTROL_TYPE_REQ_LAST,
 
 	/* Response from ThreadX to Linux */
@@ -187,6 +188,7 @@ enum spit_rpmsg_control_type {
 	SPIT_RPMSG_CONTROL_TYPE_RESP_GET_BURST_CONFIG,
 	SPIT_RPMSG_CONTROL_TYPE_RESP_GET_IMAGE_STYLE,
 	SPIT_RPMSG_CONTROL_TYPE_RESP_SET_IMAGE_STYLE,
+	SPIT_RPMSG_CONTROL_TYPE_RESP_SET_LENS_SHADING,
 	SPIT_RPMSG_CONTROL_TYPE_RESP_LAST,
 
 	SPIT_RPMSG_CONTROL_TYPE_FORCE_ENUM = 0xffffffff,
@@ -253,6 +255,8 @@ struct spit_rpmsg_control {
 		struct spit_bracketing_cfg bracketing_cfg;
 		/* REQ/RESP_GET_BURST_CONFIG / REQ/RESP_SET_BURST_CONFIG */
 		struct spit_burst_cfg burst_cfg;
+		/* REQ/RESP_GET_BURST_CONFIG */
+		struct spit_lens_shading_maps lens_shading_maps;
 	};
 };
 

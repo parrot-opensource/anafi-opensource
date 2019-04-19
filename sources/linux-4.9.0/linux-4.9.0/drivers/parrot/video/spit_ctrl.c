@@ -39,6 +39,11 @@ struct spit_ctrl_devdata {
 static struct spit_ctrl_devdata *spit_ctrl_devs;
 static struct rpmsg_device *rp_device;
 
+static inline void *spit_get_virtual_ptr(uint64_t addr)
+{
+	return phys_to_virt((long long unsigned int) spit_get_ptr(addr));
+}
+
 static const char *spit_error_to_string(enum spit_error err)
 {
 	static DECLARE_SPIT_ERROR_STRING(error_str);
@@ -243,6 +248,7 @@ static long spit_ctrl_ioctl(struct file *filp, unsigned int req,
 	struct spit_ctrl_devdata *spit_ctrl_devdata =
 		(struct spit_ctrl_devdata *) filp->private_data;
 	struct spit_rpmsg_control *resp;
+	struct spit_lens_shading_maps lsc_map = {0};
 	int ret;
 
 	if (!rp_device)
@@ -529,6 +535,54 @@ static long spit_ctrl_ioctl(struct file *filp, unsigned int req,
 		if (copy_to_user((void __user *)arg,
 				 &resp->img_style,
 				 sizeof(enum spit_img_style))) {
+			return -EFAULT;
+		}
+		break;
+
+	case SPIT_CTRL_GET_LSC_TABLE:
+		/* Save data */
+		if (copy_from_user(&lsc_map, (void __user *) arg,
+					sizeof(lsc_map)))
+			return -EFAULT;
+
+		/* Send lens shading request and wait data */
+		ret = spit_send_request(spit_ctrl_devdata, arg,
+				sizeof(struct spit_lens_shading_maps),
+				SPIT_RPMSG_CONTROL_TYPE_REQ_GET_LENS_SHADING,
+				&resp);
+
+		if (ret)
+			return ret;
+
+		/* Copy lens shading maps */
+		if (lsc_map.pixel_count != resp->lens_shading_maps.pixel_count)
+			return -EFAULT;
+
+		if (copy_to_user((void __user *) lsc_map.red_gain_map,
+				 spit_get_virtual_ptr(resp->
+					 lens_shading_maps.red_gain_map),
+				 lsc_map.pixel_count * sizeof(float))) {
+			return -EFAULT;
+		}
+
+		if (copy_to_user((void __user *) lsc_map.green_even_gain_map,
+				 spit_get_virtual_ptr(resp->
+					 lens_shading_maps.green_even_gain_map),
+				 lsc_map.pixel_count * sizeof(float))) {
+			return -EFAULT;
+		}
+
+		if (copy_to_user((void __user *) lsc_map.green_odd_gain_map,
+				 spit_get_virtual_ptr(resp->
+					 lens_shading_maps.green_odd_gain_map),
+				 lsc_map.pixel_count * sizeof(float))) {
+			return -EFAULT;
+		}
+
+		if (copy_to_user((void __user *) lsc_map.blue_gain_map,
+				 spit_get_virtual_ptr(resp->
+					 lens_shading_maps.blue_gain_map),
+				 lsc_map.pixel_count * sizeof(float))) {
 			return -EFAULT;
 		}
 		break;

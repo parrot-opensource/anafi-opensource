@@ -113,4 +113,7 @@ struct spit_cache {
 #define SPIT_CTRL_SET_IMG_STYLE \
 	_IOW(SPIT_CTRL_IOCTL_NUM, 27, enum spit_img_style)
 
+#define SPIT_CTRL_GET_LSC_TABLE \
+	_IOWR(SPIT_CTRL_IOCTL_NUM, 28, struct spit_lens_shading_maps)
+
 #endif /* _SPIT_H_ */

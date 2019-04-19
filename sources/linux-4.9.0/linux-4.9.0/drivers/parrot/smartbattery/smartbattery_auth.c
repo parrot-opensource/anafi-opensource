@@ -85,7 +85,7 @@ static bool gauge_check_chem_id(struct smartbattery *sb)
 	if (!strcmp(sb->manufacturer.name, "Fullymax"))
 		ret = (value == 0x1682);
 	else
-		ret = (value == 0x3787);
+		ret = ((value == 0x3787) || (value == 0x1961));
 
 out:
 	return ret;

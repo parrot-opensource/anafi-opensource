@@ -267,6 +267,7 @@ EXIF_SERIALIZATION_DESERIALIZATION_FUNC (focal_plane_resolution_unit);
 EXIF_SERIALIZATION_DESERIALIZATION_FUNC (light_source);
 
 EXIF_SERIALIZATION_FUNC (components_configuration);
+EXIF_SERIALIZATION_FUNC (date_time_offset);
 
 EXIF_DESERIALIZATION_FUNC (resolution);
 EXIF_DESERIALIZATION_FUNC (add_to_pending_tags);
@@ -379,9 +380,8 @@ static const GstExifTagMatch tag_map_ifd0[] = {
         serialize_orientation,
       deserialize_orientation},
   {GST_TAG_APPLICATION_NAME, EXIF_TAG_SOFTWARE, EXIF_TYPE_ASCII, 0, NULL, NULL},
-  {GST_TAG_DATE_TIME, EXIF_TAG_DATE_TIME, EXIF_TYPE_ASCII,
-        EXIF_TAG_OFFSET_TIME, serialize_date_time,
-      deserialize_date_time},
+  {GST_TAG_DATE_TIME, EXIF_TAG_DATE_TIME, EXIF_TYPE_ASCII, NULL,
+      serialize_date_time, deserialize_date_time},
   {GST_TAG_IMAGE_CHROMA_POSITIONING, EXIF_TAG_CHROMA_POSITIONING,
        EXIF_TYPE_SHORT, 0,
      serialize_chroma_positioning, deserialize_chroma_positioning},
@@ -413,6 +413,10 @@ static const GstExifTagMatch tag_map_exif[] = {
   {GST_TAG_CAPTURING_ISO_SPEED, EXIF_TAG_ISO_SPEED, EXIF_TYPE_LONG, 0, NULL,
       NULL},
   {NULL, EXIF_VERSION_TAG, EXIF_TYPE_UNDEFINED, 0, NULL, NULL},
+  /* special case, because EXIF_TAG_OFFSET_TIME cannot be considered as
+   * complementary tag for EXIF_TAG_DATE_TIME */
+  {GST_TAG_DATE_TIME, EXIF_TAG_OFFSET_TIME, EXIF_TYPE_ASCII, NULL,
+      serialize_date_time_offset, NULL},
   {GST_TAG_DATE_TIME, EXIF_TAG_DATE_TIME_ORIGINAL, EXIF_TYPE_ASCII,
         EXIF_TAG_OFFSET_TIME_ORIGINAL, serialize_date_time,
       deserialize_date_time},
@@ -953,7 +957,7 @@ write_exif_ascii_tag_from_taglist (GstExifWriter * writer,
     case G_TYPE_UINT: {
       guint uvalue = g_value_get_uint (value);
       /* Special case */
-      if (exiftag->exif_tag == GST_TAG_TIME_MSECONDS)
+      if (exiftag->exif_tag == EXIF_TAG_SUBSEC_TIME)
         str = g_strdup_printf ("%3u", uvalue);
       else
         str = g_strdup_printf ("%u", uvalue);
@@ -1690,6 +1694,9 @@ write_exif_ifd (const GstTagList * taglist, guint byte_order,
         /* special case where we write the flashpix version */
         write_exif_undefined_tag (&writer, EXIF_FLASHPIX_VERSION_TAG,
             (guint8 *) "0100", 4);
+      } else if (tag_map[i].exif_tag == EXIF_TAG_RESOLUTION_UNIT) {
+        /* special case where we write the resolution unit (ppi) */
+        gst_exif_writer_write_short_tag (&writer, EXIF_TAG_RESOLUTION_UNIT, 2);
       }
 
       if (inner_tag_map) {
@@ -2293,8 +2300,8 @@ EXIF_SERIALIZATION_DESERIALIZATION_MAP_STRING_TO_INT_FUNC (chroma_positioning,
     image_chroma_positioning);
 
 static void
-serialize_date_time (GstExifWriter * writer, const GstTagList * taglist,
-    const GstExifTagMatch * exiftag)
+serialize_date_time_offset (GstExifWriter * writer, const GstTagList * taglist,
+const GstExifTagMatch * exiftag)
 {
   GstDateTime *dt;
   gchar *off;
@@ -2307,9 +2314,6 @@ serialize_date_time (GstExifWriter * writer, const GstTagList * taglist,
     return;
   }
 
-  /* default GstDateTime serialized function will fill the EXIF_TAG_DATE_TIME */
-  write_exif_ascii_tag_from_taglist (writer, taglist, exiftag);
-
   /* process the EXIF_TAG_OFFSET_TIME */
   utc_offset = gst_date_time_get_time_zone_offset (dt);
   utc_offset_hour = ABS (utc_offset);
@@ -2318,8 +2322,24 @@ serialize_date_time (GstExifWriter * writer, const GstTagList * taglist,
   off = g_strdup_printf ("%c%02d:%02d", utc_offset >= 0 ? '+' : '-',
       utc_offset_hour, utc_offset_min);
 
-  write_exif_ascii_tag (writer, exiftag->complementary_tag, off);
+  /* write as main tag if complementary tag is not specified */
+  if (exiftag->complementary_tag == 0)
+    write_exif_ascii_tag (writer, exiftag->exif_tag, off);
+  else
+    write_exif_ascii_tag (writer, exiftag->complementary_tag, off);
+
   g_free (off);
+}
+
+static void
+serialize_date_time (GstExifWriter * writer, const GstTagList * taglist,
+    const GstExifTagMatch * exiftag)
+{
+  /* default GstDateTime serialized function will fill the EXIF_TAG_DATE_TIME */
+  write_exif_ascii_tag_from_taglist (writer, taglist, exiftag);
+
+  if (exiftag->complementary_tag)
+    serialize_date_time_offset (writer, taglist, exiftag);
 }
 
 static gint

@@ -246,6 +246,19 @@ gst_tag_register_tags_internal (gpointer unused)
        _("photo-mode"), _("Photo Mode in which the photo have been taken."),
       NULL);
 
+  gst_tag_register_static (GST_TAG_PHOTO_PANORAMA_TYPE, GST_TAG_FLAG_META,
+      G_TYPE_STRING, _("panorama-type"), _("The panorama type to which belongs"
+          " the photo."), NULL);
+
+  gst_tag_register_static (GST_TAG_PHOTO_SEQUENCE_NUMBER, GST_TAG_FLAG_META,
+      G_TYPE_INT, _("sequence-number"), _("In case of grouped photos, this tag"
+          " indicates the sequence number of the photo"), NULL);
+
+  gst_tag_register_static (GST_TAG_PHOTO_COUNT, GST_TAG_FLAG_META, G_TYPE_INT,
+      _("photo-count"), _("In case of grouped photos, this tag indicates the"
+          " total number of photos in the serie to which belongs the photo."),
+      NULL);
+
   gst_tag_register_static (GST_TAG_DRONE_ROLL, GST_TAG_FLAG_META,
       G_TYPE_FLOAT, _("drone-roll"), _("Drone roll angle in NED"), NULL);
 
@@ -255,6 +268,14 @@ gst_tag_register_tags_internal (gpointer unused)
   gst_tag_register_static (GST_TAG_DRONE_YAW, GST_TAG_FLAG_META,
       G_TYPE_FLOAT, _("drone-yaw"), _("Drone yaw angle in NED"), NULL);
 
+  gst_tag_register_static (GST_TAG_GEO_ACCURACY_HORIZONTAL, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, _("geo-accuracy-horizontal"), _("GPS Horizontal accuracy"),
+      NULL);
+
+  gst_tag_register_static (GST_TAG_GEO_ACCURACY_VERTICAL, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, _("geo-accuracy-vertical"), _("GPS Vertical accuracy"),
+      NULL);
+
   gst_tag_register_static (GST_TAG_CAMERA_ROLL, GST_TAG_FLAG_META,
       G_TYPE_FLOAT, _("camera-roll"), _("Camera roll angle in NED"), NULL);
 
@@ -263,6 +284,10 @@ gst_tag_register_tags_internal (gpointer unused)
 
   gst_tag_register_static (GST_TAG_CAMERA_YAW, GST_TAG_FLAG_META,
       G_TYPE_FLOAT, _("camera-yaw"), _("Camera yaw angle in NED"), NULL);
+
+  gst_tag_register_static (GST_TAG_ABOVE_TAKEOFF_ALTITUDE, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, _("above-takeoff-altitude"),
+      _("Altitude above take-off in meters"), NULL);
 
   gst_tag_register_static (GST_TAG_IMAGE_CHROMA_POSITIONING, GST_TAG_FLAG_META,
       G_TYPE_STRING, _("chroma-positioning"),
