@@ -529,6 +529,15 @@ G_BEGIN_DECLS
  */
 #define GST_TAG_IMAGE_CHROMA_POSITIONING "chroma-positioning"
 
+/**
+ * GST_TAG_CAPTURING_TS:
+ *
+ * Tag to store the accurate frame capture timestamp
+ * Timestamp value is expressed in microsecond and is not necessarily related to
+ * a wallclock.
+ */
+#define GST_TAG_CAPTURING_TS "capturing-timestamp"
+
 /* additional information for image tags */
 
 /**

@@ -269,6 +269,11 @@ gst_tag_register_tags_internal (gpointer unused)
       _("Specifies the positioning of subsampled chrominance components "
           "relative to luminance samples."), NULL);
 
+  gst_tag_register_static (GST_TAG_CAPTURING_TS, GST_TAG_FLAG_META,
+      G_TYPE_UINT64, _("capturing-timestamp"),
+      _("accurate timestamp corresponding to the fame capture on sensor"),
+      NULL);
+
   return NULL;
 }
 

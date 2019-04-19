@@ -34,20 +34,57 @@ struct pgimbal_drvdata {
 	struct mutex			lock;
 	wait_queue_head_t		wait_rpmsg;
 	enum pgimbal_state		state;
+	enum pgimbal_calibration_state	calibration_state;
+	enum pgimbal_calibration_result	calibration_result;
 	uint8_t				curr_alerts;
 	int				offsets_update_in_progress;
 	struct pgimbal_offset_info	curr_offsets[PGIMBAL_AXIS_COUNT];
 };
 
 #ifdef CONFIG_SYSFS
-static ssize_t calibrate_store(struct device *dev,
-			       struct device_attribute *attr, const char *buf,
-			       size_t count)
+static ssize_t calibration_trigger_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	struct rpmsg_device *rpdev = container_of(dev, struct rpmsg_device,
+						  dev);
+	struct pgimbal_drvdata *pgimbal_data = dev_get_drvdata(&rpdev->dev);
+	int started;
+
+	started = pgimbal_data->calibration_state
+			== PGIMBAL_CALIBRATION_STATE_IN_PROGRESS ? 1 : 0;
+
+	return sprintf(buf, "%d\n", started);
+}
+
+static ssize_t calibration_trigger_store(struct device *dev,
+					 struct device_attribute *attr,
+					 const char *buf, size_t count)
 {
 	struct rpmsg_device *rpdev = container_of(dev, struct rpmsg_device,
 						  dev);
 	struct pgimbal_drvdata *pgimbal_data = dev_get_drvdata(&rpdev->dev);
 	struct pgimbal_rpmsg rpmsg;
+	int start;
+	int ret;
+
+	if (count == 0)
+		return 0;
+
+	ret = sscanf(buf, "%d\n", &start);
+	if (ret != 1)
+		return -EINVAL;
+
+	if (start != 0 && start != 1)
+		return -EINVAL;
+
+	if (start && pgimbal_data->calibration_state
+		== PGIMBAL_CALIBRATION_STATE_IN_PROGRESS)
+		return -EINVAL;
+
+	if (!start && pgimbal_data->calibration_state
+		!= PGIMBAL_CALIBRATION_STATE_IN_PROGRESS)
+		return -EINVAL;
 
 	mutex_lock(&pgimbal_data->lock);
 
@@ -59,6 +96,26 @@ static ssize_t calibrate_store(struct device *dev,
 	dev_dbg(dev, "calibration request sent\n");
 
 	return count;
+}
+
+static ssize_t calibration_state_show(struct device *dev,
+				      struct device_attribute *attr, char *buf)
+{
+	struct rpmsg_device *rpdev = container_of(dev, struct rpmsg_device,
+						  dev);
+	struct pgimbal_drvdata *pgimbal_data = dev_get_drvdata(&rpdev->dev);
+
+	return sprintf(buf, "%d\n", pgimbal_data->calibration_state);
+}
+
+static ssize_t calibration_result_show(struct device *dev,
+				      struct device_attribute *attr, char *buf)
+{
+	struct rpmsg_device *rpdev = container_of(dev, struct rpmsg_device,
+						  dev);
+	struct pgimbal_drvdata *pgimbal_data = dev_get_drvdata(&rpdev->dev);
+
+	return sprintf(buf, "%d\n", pgimbal_data->calibration_result);
 }
 
 static ssize_t alerts_show(struct device *dev, struct device_attribute *attr,
@@ -206,8 +263,12 @@ static ssize_t offsets_update_trigger_store(struct device *dev,
 
 	return count;
 }
+
 static struct device_attribute pgimbal_sysfs_attrs[] = {
-	__ATTR(calibrate, S_IWUSR , NULL, calibrate_store),
+	__ATTR(calibration_trigger, S_IWUSR | S_IRUGO, calibration_trigger_show,
+	       calibration_trigger_store),
+	__ATTR(calibration_state, S_IRUGO, calibration_state_show, NULL),
+	__ATTR(calibration_result, S_IRUGO, calibration_result_show, NULL),
 	__ATTR(alerts, S_IRUGO , alerts_show, NULL),
 	__ATTR(offset_x, S_IWUSR | S_IRUGO, offset_x_show, offset_x_store),
 	__ATTR(offset_y, S_IWUSR | S_IRUGO, offset_y_show, offset_y_store),
@@ -231,6 +292,18 @@ static int pgimbal_rpmsg_cb(struct rpmsg_device *rpdev, void *data, int len,
 	mutex_lock(&pgimbal_data->lock);
 
 	switch (rpmsg->type) {
+	case PGIMBAL_RPMSG_TYPE_CALIBRATION_STATE:
+		dev_dbg(pgimbal_data->dev, "calibration state received: %d\n",
+			rpmsg->calibration_state);
+		pgimbal_data->calibration_state = rpmsg->calibration_state;
+		sysfs_notify(&rpdev->dev.kobj, NULL, "calibration_state");
+		break;
+	case PGIMBAL_RPMSG_TYPE_CALIBRATION_RESULT:
+		dev_dbg(pgimbal_data->dev, "calibration result received: %d\n",
+			rpmsg->calibration_result);
+		pgimbal_data->calibration_result = rpmsg->calibration_result;
+		sysfs_notify(&rpdev->dev.kobj, NULL, "calibration_result");
+		break;
 	case PGIMBAL_RPMSG_TYPE_OFFSET:
 		dev_dbg(pgimbal_data->dev,
 			"offset received: axis %d value %d\n",
@@ -301,6 +374,7 @@ static int pgimbal_rpmsg_probe(struct rpmsg_device *rpdev)
 
 	pgimbal_data->state = PGIMBAL_STATE_IDLE;
 	pgimbal_data->curr_alerts = 0;
+	pgimbal_data->calibration_state = PGIMBAL_CALIBRATION_STATE_OK;
 	dev_set_drvdata(&rpdev->dev, pgimbal_data);
 
 #ifdef CONFIG_SYSFS

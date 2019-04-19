@@ -24,6 +24,9 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/i2c.h>
 
+/* FW version string maximum size */
+#define FW_VERSION_MAX_SIZE 10
+
 /**
  * struct bldc_cypress_platform_data - Platform data for the bldc
  * cypress driver
@@ -57,6 +60,8 @@ struct bldc_state {
 	struct bldc_cypress_platform_data pdata;
 	u8 *buffer;
 	int is_overflow;
+	char fw_version[FW_VERSION_MAX_SIZE];
+	u8 hw_version;
 
 	/* current sound state
 	 * 0: no sound is currently playing

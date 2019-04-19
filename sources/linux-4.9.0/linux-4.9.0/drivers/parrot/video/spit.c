@@ -68,8 +68,9 @@ struct spit_devdata {
 	wait_queue_head_t		 ctrl_wait;
 	wait_queue_head_t		 data_wait;
 	unsigned int			 wait_flags;
-	struct spit_rpmsg_stream
-					resp[SPIT_RPMSG_STREAM_TYPE_RESP_COUNT];
+	struct spit_rpmsg_stream resp[SPIT_RPMSG_STREAM_TYPE_RESP_COUNT];
+	struct mutex ctrl_lock[SPIT_RPMSG_STREAM_TYPE_RESP_COUNT];
+
 	/* Stream states */
 	int				 initialized;
 	enum spit_frame_types		 started;
@@ -362,6 +363,8 @@ static int spit_send_request(struct spit_devdata *spit_devdata, void *data,
 			memcpy(&rpmsg.data, data, size);
 	}
 
+	mutex_lock(&spit_devdata->ctrl_lock[idx]);
+
 	/* Setup wait flag */
 	mutex_lock(&spit_devdata->lock);
 	spit_devdata->wait_flags |= flag;
@@ -384,6 +387,7 @@ static int spit_send_request(struct spit_devdata *spit_devdata, void *data,
 		dev_err(spit_devdata->dev, "request 0x%04x failed: %s\n", type,
 			ret ? "rpmsg channel error" : "timeout");
 
+		mutex_unlock(&spit_devdata->ctrl_lock[idx]);
 		return ret == 0 ? -ETIMEDOUT : -ERESTARTSYS;
 	}
 
@@ -392,6 +396,7 @@ static int spit_send_request(struct spit_devdata *spit_devdata, void *data,
 	if (ret != SPIT_ERROR_NONE) {
 		dev_err(spit_devdata->dev, "request 0x%04x failed: %s\n", type,
 			spit_error_to_string(ret));
+		mutex_unlock(&spit_devdata->ctrl_lock[idx]);
 		return ret > 0 ? -ret : ret;
 	}
 
@@ -405,10 +410,13 @@ static int spit_send_request(struct spit_devdata *spit_devdata, void *data,
 		if (copy_to_user((void __user *) data,
 		    spit_devdata->resp[idx].data, size)) {
 			mutex_unlock(&spit_devdata->lock);
+			mutex_unlock(&spit_devdata->ctrl_lock[idx]);
 			return -EFAULT;
 		}
 		mutex_unlock(&spit_devdata->lock);
 	}
+
+	mutex_unlock(&spit_devdata->ctrl_lock[idx]);
 
 	return 0;
 }
@@ -1109,7 +1117,12 @@ static int __init spit_init(void)
 		return -ENOMEM;
 
 	for (i = 0; i < SPIT_STREAM_COUNT; i++) {
+		int j;
+
 		mutex_init(&spit_devs[i].lock);
+
+		for (j = 0; j < SPIT_RPMSG_STREAM_TYPE_RESP_COUNT; j++)
+			mutex_init(&spit_devs[i].ctrl_lock[j]);
 
 		spit_devs[i].stream = i;
 		spit_devs[i].started = 0;

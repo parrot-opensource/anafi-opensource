@@ -228,6 +228,10 @@
 #define FSG_DRIVER_DESC		"Mass Storage Function"
 #define FSG_DRIVER_VERSION	"2009/09/11"
 
+#define EXTRA_STRING_COUNT 1
+#define EXTRA_STRING_LEN 128
+#define PARROT_MAGIC_BREQUEST 0xcf
+
 static const char fsg_string_interface[] = "Mass Storage";
 
 #include "storage_common.h"
@@ -311,6 +315,7 @@ struct fsg_common {
 	/* Gadget's private data. */
 	void			*private_data;
 
+	char extra_string[EXTRA_STRING_COUNT][EXTRA_STRING_LEN];
 	char inquiry_string[INQUIRY_STRING_LEN];
 
 	struct kref		ref;
@@ -503,6 +508,7 @@ static int fsg_setup(struct usb_function *f,
 	u16			w_index = le16_to_cpu(ctrl->wIndex);
 	u16			w_value = le16_to_cpu(ctrl->wValue);
 	u16			w_length = le16_to_cpu(ctrl->wLength);
+	unsigned long           flags;
 
 	if (!fsg_is_set(fsg->common))
 		return -EOPNOTSUPP;
@@ -542,6 +548,27 @@ static int fsg_setup(struct usb_function *f,
 
 		/* Respond with data/status */
 		req->length = min((u16)1, w_length);
+		return ep0_queue(fsg->common);
+
+	case PARROT_MAGIC_BREQUEST:
+		/* bail out if the parameters are just not right to avoid
+		 * any conflict
+		 * USB_RECIP_INTERFACE so that composite.c will route theg
+		 * request in case of multiple interfaces (MS/ADB for instance)
+		 */
+		if (ctrl->bRequestType !=
+		    (USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_INTERFACE))
+			break;
+		if (w_length != EXTRA_STRING_LEN ||
+		    w_value >= EXTRA_STRING_COUNT)
+			break;
+		/* extra_string[w_value] is guaranteed to be 0 terminated */
+		spin_lock_irqsave(&fsg->common->lock, flags);
+		memcpy(req->buf,
+		       fsg->common->extra_string[w_value],
+		       EXTRA_STRING_LEN);
+		spin_unlock_irqrestore(&fsg->common->lock, flags);
+		req->length = EXTRA_STRING_LEN;
 		return ep0_queue(fsg->common);
 	}
 
@@ -3370,6 +3397,62 @@ static ssize_t fsg_opts_stall_store(struct config_item *item, const char *page,
 	return ret;
 }
 
+static ssize_t fsg_opts_extra_show(struct config_item *item, char *page,
+				   unsigned int index)
+{
+	struct fsg_opts *opts = to_fsg_opts(item);
+	int result;
+	unsigned long flags;
+
+	if (index >= EXTRA_STRING_COUNT)
+		return -ENOTSUPP;
+
+	spin_lock_irqsave(&opts->common->lock, flags);
+	result = sprintf(page, "%s", opts->common->extra_string[index]);
+	spin_unlock_irqrestore(&opts->common->lock, flags);
+
+	return result;
+}
+
+static ssize_t fsg_opts_extra_store(struct config_item *item, const char *page,
+				    size_t len, unsigned int index)
+{
+	struct fsg_opts *opts = to_fsg_opts(item);
+	int ret;
+	unsigned long flags;
+
+	if (index >= EXTRA_STRING_COUNT)
+		return -ENOTSUPP;
+
+	spin_lock_irqsave(&opts->common->lock, flags);
+
+	if (len < EXTRA_STRING_LEN){
+		memset(opts->common->extra_string[index]+len,
+		       0,
+		       EXTRA_STRING_LEN-len);
+		memcpy(opts->common->extra_string[index], page, len);
+		ret = len;
+	} else
+		ret = -ENOMEM;
+
+	spin_unlock_irqrestore(&opts->common->lock, flags);
+
+	return ret;
+}
+
+static ssize_t fsg_opts_extra0_show(struct config_item *item, char *page)
+{
+	return fsg_opts_extra_show(item, page, 0);
+}
+
+static ssize_t fsg_opts_extra0_store(struct config_item *item, const char *page,
+				     size_t len)
+{
+	return fsg_opts_extra_store(item, page, len, 0);
+}
+
+CONFIGFS_ATTR(fsg_opts_, extra0);
+
 CONFIGFS_ATTR(fsg_opts_, stall);
 
 #ifdef CONFIG_USB_GADGET_DEBUG_FILES
@@ -3414,6 +3497,7 @@ CONFIGFS_ATTR(fsg_opts_, num_buffers);
 
 static struct configfs_attribute *fsg_attrs[] = {
 	&fsg_opts_attr_stall,
+	&fsg_opts_attr_extra0,
 #ifdef CONFIG_USB_GADGET_DEBUG_FILES
 	&fsg_opts_attr_num_buffers,
 #endif

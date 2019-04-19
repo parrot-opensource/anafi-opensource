@@ -1,5 +1,5 @@
 Open Source Software used in **Parrot Anafi**.  
-Firmware version: **1.1.0**  
+Firmware version: **1.2.4**  
 Unless stated otherwise, later versions of the firmware
 use these same software modules.
 
@@ -45,7 +45,7 @@ You can download Open Source Archives from following table:
 |LGPL|[gst-plugins-base](sources/gst-plugins-base-1.12.0)
 |LGPL|[gst-plugins-good](sources/gst-plugins-good-1.12.1)
 |LGPL|[gstreamer](sources/gstreamer-1.12.1)
-|LGPL|[libconfig](sources/libconfig-1.5)
+|LGPL|[libconfig](sources/libconfig-1.7.2)
 |LGPL|[libiberty](sources/libiberty-20161017)
 |LGPL|[libnl](sources/libnl-3.2.24)
 |LGPL|[lttng-ust](sources/lttng-ust-2.8.1)

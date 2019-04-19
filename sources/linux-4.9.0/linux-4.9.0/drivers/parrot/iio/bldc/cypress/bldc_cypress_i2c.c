@@ -220,6 +220,80 @@ out_download_firmware:
 	return ret;
 }
 
+static int bldc_i2c_get_esc_infos(struct bldc_state *st)
+{
+	u8 esc_info[PARROT_BLDC_GET_INFO_LENGTH];
+	int rc = bldc_i2c_read_multiple_byte(st->dev,
+						PARROT_BLDC_REG_INFO,
+						PARROT_BLDC_GET_INFO_LENGTH,
+						esc_info, 0);
+
+	if (rc) {
+		dev_err(st->dev, "failed to retrieve ESC infos\n");
+		memset(esc_info, 0, sizeof(esc_info));
+	}
+	snprintf(
+		st->fw_version,
+		sizeof(st->fw_version),
+		"%d.%d.%c.%d",
+		esc_info[0], esc_info[1], esc_info[2], esc_info[3]);
+	st->hw_version = esc_info[4];
+
+	return rc;
+}
+
+static inline struct bldc_state* bldc_dev_to_st(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+	struct bldc_state *st = iio_priv(indio_dev);
+
+	return st;
+}
+
+static ssize_t show_fw_version(
+	struct device *dev,
+	struct device_attribute *attr,
+	char *buf)
+{
+	struct bldc_state *st = bldc_dev_to_st(dev);
+
+	return sprintf(buf, "%s\n", st->fw_version);
+}
+
+static ssize_t show_hw_version(
+	struct device *dev,
+	struct device_attribute *attr,
+	char *buf)
+{
+	struct bldc_state *st = bldc_dev_to_st(dev);
+
+	return sprintf(buf, "%d\n", st->hw_version);
+}
+
+static DEVICE_ATTR(fw_version, S_IRUSR, show_fw_version, NULL);
+static DEVICE_ATTR(hw_version, S_IRUSR, show_hw_version, NULL);
+
+static struct attribute *bldc_attrs[] = {
+	&dev_attr_fw_version.attr,
+	&dev_attr_hw_version.attr,
+	NULL,
+};
+
+static struct attribute_group bldc_attr_group = {
+	.attrs = bldc_attrs,
+};
+
+static int bldc_create_sysfs(struct device *dev)
+{
+	return sysfs_create_group(&dev->kobj, &bldc_attr_group);
+}
+
+static void bldc_remove_sysfs(struct device *dev)
+{
+	sysfs_remove_group(&dev->kobj, &bldc_attr_group);
+}
+
 static int bldc_cypress_i2c_probe(struct i2c_client *client,
 		const struct i2c_device_id *id)
 {
@@ -320,12 +394,23 @@ accept:
 
 	bldc_i2c_configure(indio_dev, client, st);
 
+	rc = bldc_i2c_get_esc_infos(st);
+	if (rc)
+		return rc;
+
+	rc = bldc_create_sysfs(&client->dev);
+	if (rc)
+		return rc;
+
 	return bldc_cypress_probe(indio_dev);
 }
 
 static int bldc_cypress_i2c_remove(struct i2c_client *client)
 {
 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+
+	bldc_remove_sysfs(&client->dev);
+
 	bldc_cypress_remove(indio_dev);
 	devm_iio_device_free(&client->dev, indio_dev);
 	return 0;

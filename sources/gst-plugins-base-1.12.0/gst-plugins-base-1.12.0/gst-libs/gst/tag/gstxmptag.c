@@ -1181,6 +1181,8 @@ _init_xmp_tag_map (gpointer user_data)
       "drone-parrot:BootId", GstXmpTagTypeSimple, NULL, NULL);
   _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PHOTO_MODE,
       "drone-parrot:PhotoMode", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_CAPTURING_TS,
+      "drone-parrot:CaptureTsUs", GstXmpTagTypeSimple, NULL, NULL);
   _gst_xmp_add_schema ("drone-parrot", schema);
 
   return NULL;
@@ -1667,6 +1669,8 @@ gst_value_serialize_xmp (const GValue * value)
       return double_to_fraction_string (g_value_get_double (value));
     case G_TYPE_FLOAT:
       return float_to_fraction_string (g_value_get_float (value));
+    case G_TYPE_UINT64:
+      return g_strdup_printf ("%" G_GUINT64_FORMAT, g_value_get_uint64 (value));
     default:
       break;
   }

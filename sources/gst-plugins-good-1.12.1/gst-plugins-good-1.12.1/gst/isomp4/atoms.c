@@ -4746,7 +4746,14 @@ atom_trak_set_video_type (AtomTRAK * trak, AtomsContext * context,
   dheight = entry->height;
   /* ISO file spec says track header w/h indicates track's visual presentation
    * (so this together with pixels w/h implicitly defines PAR) */
+#ifdef PARROT_MP4_FLAVOR
+  if (par_n && (context->flavor != ATOMS_TREE_FLAVOR_MOV) &&
+      (context->flavor != ATOMS_TREE_FLAVOR_ISOM)) {
+    /* Parrot interpretation of the spec is to keep track header w/h as the
+     * pixel dimension of the image (as proposed by the spec § 8.3.2.3 */
+#else
   if (par_n && (context->flavor != ATOMS_TREE_FLAVOR_MOV)) {
+#endif
     /* Assumes square pixels display */
     if (!gst_video_calculate_display_ratio (&dwidth, &dheight, entry->width,
             entry->height, par_n, par_d, 1, 1)) {

@@ -628,9 +628,9 @@ country JO: DFS-JP
 country JP: DFS-JP
 	(2402 - 2472 @ 40), (20)
 	#(2474 - 2494 @ 20), (20), NO-OFDM
-	(4910 - 4990 @ 40), (23)
+	(4910 - 4990 @ 40), (23), NO-OUTDOOR
 	(5030 - 5090 @ 40), (23), NO-OUTDOOR
-	(5170 - 5250 @ 80), (20), AUTO-BW
+	(5170 - 5250 @ 80), (20), NO-OUTDOOR, AUTO-BW
 	(5250 - 5330 @ 80), (20), DFS, AUTO-BW
 	(5490 - 5710 @ 160), (23), DFS
 	# 60 GHz band channels 2-4 at 10mW,

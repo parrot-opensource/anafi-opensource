@@ -29,6 +29,7 @@ struct spit_ctrl_devdata {
 	wait_queue_head_t	 ctrl_wait;
 	unsigned long		 wait_flags;
 	struct spit_rpmsg_control resp[SPIT_RPMSG_CONTROL_TYPE_RESP_COUNT];
+	struct mutex		 ctrl_lock[SPIT_RPMSG_CONTROL_TYPE_RESP_COUNT];
 	/* File entry */
 	struct miscdevice	 misc_dev;
 	char			 devname[32];
@@ -191,6 +192,9 @@ static int spit_send_request(struct spit_ctrl_devdata *spit_ctrl_devdata,
 	if (data && copy_from_user(&rpmsg.data, (void __user *)data, size))
 		return -EFAULT;
 
+
+	mutex_lock(&spit_ctrl_devdata->ctrl_lock[idx]);
+
 	/* Setup wait flag */
 	mutex_lock(&spit_ctrl_devdata->lock);
 	spit_ctrl_devdata->wait_flags |= flag;
@@ -213,6 +217,7 @@ static int spit_send_request(struct spit_ctrl_devdata *spit_ctrl_devdata,
 		dev_err(spit_ctrl_devdata->dev, "request 0x%04x failed: %s\n",
 			type, ret ? "rpmsg control channel error" : "timeout");
 
+		mutex_unlock(&spit_ctrl_devdata->ctrl_lock[idx]);
 		return ret == 0 ? -ETIMEDOUT : -ERESTARTSYS;
 	}
 
@@ -221,12 +226,14 @@ static int spit_send_request(struct spit_ctrl_devdata *spit_ctrl_devdata,
 	if (ret != SPIT_ERROR_NONE) {
 		dev_err(spit_ctrl_devdata->dev, "request 0x%04x failed: %s\n",
 			type, spit_error_to_string(ret));
+		mutex_unlock(&spit_ctrl_devdata->ctrl_lock[idx]);
 		return ret > 0 ? -ret : ret;
 	}
 
 	/* Set response */
 	*resp = &spit_ctrl_devdata->resp[idx];
 
+	mutex_unlock(&spit_ctrl_devdata->ctrl_lock[idx]);
 	return 0;
 }
 
@@ -553,7 +560,11 @@ static int __init spit_ctrl_init(void)
 		return -ENOMEM;
 
 	for (i = 0; i < SPIT_CONTROL_COUNT; i++) {
+		int j;
 		mutex_init(&spit_ctrl_devs[i].lock);
+
+		for (j = 0; j < SPIT_RPMSG_CONTROL_TYPE_RESP_COUNT; j++)
+			mutex_init(&spit_ctrl_devs[i].ctrl_lock[j]);
 
 		spit_ctrl_devs[i].control = i;
 		atomic_set(&spit_ctrl_devs[i].opened, 0);

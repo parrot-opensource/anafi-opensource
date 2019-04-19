@@ -429,6 +429,22 @@ struct spit_ae_info {
 				     *   the value will be 1000. If value is 0,
 				     *   the current ratio is not updated.
 				     */
+	float    roi_x; /*!< Current ROI center on x-axis, relative to
+				     *  streaming image width.
+				     *  Value is between 0 and 1.0
+				     */
+	float    roi_y; /*!< Current ROI center on y-axis, relative to
+				     *  streaming image height.
+				     *  Value is between 0 and 1.0
+				     */
+	float    roi_width; /*!< Current ROI width (Read-only), relative to
+				     *  streaming image width.
+				     *  Value is between 0 and 1.0
+				     */
+	float    roi_height; /*!< Current ROI height (Read-only), relative to
+				     *  streaming image height.
+				     *  Value is between 0 and 1.0
+				     */
 };
 
 enum spit_awb_mode {
