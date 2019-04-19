@@ -93,13 +93,13 @@ country AT: DFS-ETSI
 # The EIRP for DFS bands can be increased by 3dB if TPC is implemented.
 # In order to allow 80MHz operation between 5650-5730MHz the upper boundary
 # of this more restrictive band has been shifted up by 5MHz from 5725MHz.
-country AU: DFS-ETSI
+country AU: DFS-FCC
 	(2402 - 2472 @ 40), (36)
 	(5150 - 5250 @ 80), (23), NO-OUTDOOR, AUTO-BW
 	(5250 - 5350 @ 80), (20), NO-OUTDOOR, AUTO-BW, DFS
 	(5470 - 5600 @ 80), (27), DFS
 	(5650 - 5730 @ 80), (27), DFS
-	(5730 - 5850 @ 80), (36)
+	(5735 - 5835 @ 80), (36)
 	(57000 - 66000 @ 2160), (43), NO-OUTDOOR
 
 country AW: DFS-ETSI
@@ -951,8 +951,8 @@ country NO: DFS-ETSI
 	(2402 - 2472 @ 40), (100 mW)
 	(5150 - 5250 @ 80), (200 mW), AUTO-BW, NO-OUTDOOR
 	(5250 - 5350 @ 80), (100 mW), DFS, AUTO-BW
-	(5470 - 5795 @ 160), (500 mW), DFS
-	(5815 - 5850 @ 35), (2000 mW), DFS
+	(5470 - 5735 @ 160), (500 mW), DFS
+	(5735 - 5835 @ 80), (14)
 	(17100 - 17300 @ 200), (100 mW)
 	# 60 GHz band channels 1-4, ref: Etsi En 302 567
 	(57000 - 66000 @ 2160), (40)

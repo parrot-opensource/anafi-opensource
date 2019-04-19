@@ -388,6 +388,7 @@
 				reg = <1>;
 				amb,pinmux-ids = <0x204b 0x204c 0x205b 0x205c
 						  0x205d 0x205e>;
+				amb,pinconf-ids = <0x90004b>;
 			};
 
 			sdmmc0_pins_8bit: sdmmc0@2 {
