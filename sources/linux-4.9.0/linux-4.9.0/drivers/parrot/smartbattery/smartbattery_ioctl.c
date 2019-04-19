@@ -35,7 +35,7 @@ static struct smartbattery *g_smartbattery;
 #define SMARTBATTERY_READ(name, variable)				\
 	rc = FUNCTION(name)(&sb->device, &variable);			\
 	if (rc < 0)							\
-		return -EIO;						\
+		return rc;						\
 	if (copy_to_user((void __user *)arg, &variable,			\
 			   sizeof(variable)))				\
 		return -EFAULT;						\
@@ -47,7 +47,7 @@ static struct smartbattery *g_smartbattery;
 		return -EFAULT;						\
 	rc = FUNCTION(name)(&sb->device, &variable);			\
 	if (rc < 0)							\
-		return -EIO;						\
+		return rc;						\
 	ret = 0;
 
 #define SMARTBATTERY_WRITE_READ(name, variable)				\
@@ -56,7 +56,7 @@ static struct smartbattery *g_smartbattery;
 		return -EFAULT;						\
 	rc = FUNCTION(name)(&sb->device, &variable);			\
 	if (rc < 0)							\
-		return -EIO;						\
+		return rc;						\
 	if (copy_to_user((void __user *)arg,				\
 				&variable, sizeof(variable)))		\
 		return -EFAULT;						\

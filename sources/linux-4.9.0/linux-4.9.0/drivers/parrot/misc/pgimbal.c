@@ -38,6 +38,27 @@ struct pgimbal_drvdata {
 };
 
 #ifdef CONFIG_SYSFS
+static ssize_t calibrate_store(struct device *dev,
+			       struct device_attribute *attr, const char *buf,
+			       size_t count)
+{
+	struct rpmsg_device *rpdev = container_of(dev, struct rpmsg_device,
+						  dev);
+	struct pgimbal_drvdata *pgimbal_data = dev_get_drvdata(&rpdev->dev);
+	struct pgimbal_rpmsg rpmsg;
+
+	mutex_lock(&pgimbal_data->lock);
+
+	rpmsg.type = PGIMBAL_RPMSG_TYPE_CALIBRATION_REQUEST;
+	rpmsg_send(rpdev->ept, &rpmsg, sizeof(struct pgimbal_rpmsg));
+
+	mutex_unlock(&pgimbal_data->lock);
+
+	dev_dbg(dev, "calibration request sent\n");
+
+	return count;
+}
+
 static ssize_t offset_store(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count,
 			    enum pgimbal_axis axis)
@@ -174,6 +195,7 @@ static ssize_t offsets_update_trigger_store(struct device *dev,
 	return count;
 }
 static struct device_attribute pgimbal_sysfs_attrs[] = {
+	__ATTR(calibrate, S_IWUSR , NULL, calibrate_store),
 	__ATTR(offset_x, S_IWUSR | S_IRUGO, offset_x_show, offset_x_store),
 	__ATTR(offset_y, S_IWUSR | S_IRUGO, offset_y_show, offset_y_store),
 	__ATTR(offset_z, S_IWUSR | S_IRUGO, offset_z_show, offset_z_store),

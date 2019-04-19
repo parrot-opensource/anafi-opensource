@@ -32,7 +32,7 @@
 /* for read_flash and write_flash */
 #define SMARTBATTERY_FLASH_BUFFER_SIZE 26
 
-enum I2C_CMD {
+enum i2c_cmd {
 	I2C_REQ_GET_MAGIC = 0,
 	I2C_REQ_GET_STATE = 1,
 	I2C_REQ_GET_VERSION = 2,

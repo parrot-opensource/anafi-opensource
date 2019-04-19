@@ -58,7 +58,7 @@ static int request(struct smartbattery_device *device,
 	const u8* tx_data, u16 tx_size,
 	u8* rx_data, u16 rx_size)
 {
-	int ret = -1;
+	int ret = -EINVAL;
 	int nb_send;
 	int nb_recv;
 	uint8_t sum;
@@ -67,7 +67,7 @@ static int request(struct smartbattery_device *device,
 		(tx_size == 0) ||
 		(rx_data == NULL) ||
 		(rx_size == 0))
-		return -1;
+		goto out;
 
 	down(&device->lock);
 
@@ -76,6 +76,7 @@ static int request(struct smartbattery_device *device,
 		dev_warn(
 			&device->client->dev,
 			"%s(): send error\n", __func__);
+		ret = -EIO;
 		goto out;
 	}
 
@@ -84,6 +85,7 @@ static int request(struct smartbattery_device *device,
 		dev_warn(
 			&device->client->dev,
 			"%s(): receive error\n", __func__);
+		ret = -EIO;
 		goto out;
 	}
 	if (tx_data[0] != rx_data[0]) {
@@ -91,7 +93,7 @@ static int request(struct smartbattery_device *device,
 			&device->client->dev,
 			"Bad Req ID (0x%x != 0x%x)\n",
 			tx_data[0], rx_data[0]);
-		ret = -2;
+		ret = -EIO;
 		goto out;
 	}
 	sum = compute_checksum(rx_data, rx_size-1);
@@ -101,7 +103,7 @@ static int request(struct smartbattery_device *device,
 			&device->client->dev,
 			"Bad Checksum (0x%.4x != 0x%.4x)\n",
 			sum, rx_data[rx_size-1]);
-		ret = -3;
+		ret = -EIO;
 		goto out;
 	}
 
@@ -123,7 +125,7 @@ int smartbattery_get_magic(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	memcpy(magic->value, rx_data.value, sizeof(magic->value));
@@ -153,7 +155,7 @@ int smartbattery_get_version(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	get_partition_version(&version->application_version,
@@ -183,7 +185,7 @@ int smartbattery_get_state(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	state->system_state =  rx_data.state       & 0x3;
@@ -211,7 +213,7 @@ int smartbattery_get_voltage(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	voltage->value = le16toh(rx_data.value);
@@ -238,7 +240,7 @@ int smartbattery_get_cell_voltage(
 	ret = request(device, (uint8_t *)&tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	voltage->value = le16toh(rx_data.value);
@@ -258,7 +260,7 @@ int smartbattery_get_current(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	current_val->value = le16toh(rx_data.value);
@@ -278,7 +280,7 @@ int smartbattery_get_remaining_cap(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	capacity->value = le16toh(rx_data.value);
@@ -298,7 +300,7 @@ int smartbattery_get_full_charge_cap(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	capacity->value = le16toh(rx_data.value);
@@ -318,7 +320,7 @@ int smartbattery_get_design_cap(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	capacity->value = le16toh(rx_data.value);
@@ -338,7 +340,7 @@ int smartbattery_get_rsoc(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	rsoc->value = le16toh(rx_data.value);
@@ -358,7 +360,7 @@ int smartbattery_get_temperature(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	temperature->value = le16toh(rx_data.value);
@@ -378,7 +380,7 @@ int smartbattery_get_charger_temperature(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	temperature->value = le16toh(rx_data.value);
@@ -398,7 +400,7 @@ int smartbattery_get_avg_time_to_empty(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	time->value = le16toh(rx_data.value);
@@ -418,7 +420,7 @@ int smartbattery_get_avg_time_to_full(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	time->value = le16toh(rx_data.value);
@@ -438,7 +440,7 @@ int smartbattery_get_avg_current(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	current_val->value = le16toh(rx_data.value);
@@ -458,7 +460,7 @@ int smartbattery_get_max_charge_voltage(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	voltage->value = le16toh(rx_data.value);
@@ -478,7 +480,7 @@ int smartbattery_get_charging_current(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	current_val->value = le16toh(rx_data.value);
@@ -498,7 +500,7 @@ int smartbattery_get_input_voltage(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	voltage->value = le16toh(rx_data.value);
@@ -511,7 +513,7 @@ int smartbattery_check_flash(
 		struct smartbattery_device *device,
 		struct smartbattery_check_flash_area *area)
 {
-	int ret = -1;
+	int ret;
 	struct check_flash_tx tx_data = {
 		.req_id = I2C_REQ_CHECK_FLASH,
 		.address = area->address,
@@ -526,7 +528,7 @@ int smartbattery_check_flash(
 	ret = request(device, (uint8_t *)&tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	area->crc16 = le16toh(rx_data.crc16);
@@ -561,7 +563,7 @@ int smartbattery_read_flash(
 		struct smartbattery_device *device,
 		struct smartbattery_flash_chunk *chunk)
 {
-	int ret = -1;
+	int ret;
 	struct read_flash_tx tx_data = {
 		.req_id = I2C_REQ_READ_FLASH,
 		.address = chunk->address,
@@ -605,7 +607,7 @@ int smartbattery_get_ctrl_info(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	ctrl_info->type = rx_data.type;
@@ -617,8 +619,8 @@ int smartbattery_get_ctrl_info(
 		ctrl_info->type_name = "MSP430G2533";
 		break;
 	default:
-		ret = -1;
-		goto out;
+		ctrl_info->type_name = "unknown";
+		break;
 	}
 	ctrl_info->partitioning_type = rx_data.partitioning_type;
 	ctrl_info->partition_count = rx_data.partition_count;
@@ -639,7 +641,7 @@ int smartbattery_get_chemistry(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	chemistry->type = rx_data.type;
@@ -651,7 +653,7 @@ int smartbattery_get_chemistry(
 		chemistry->type_name = "unknown";
 		break;
 	default:
-		ret = -1;
+		chemistry->type_name = "unknown";
 		break;
 	}
 
@@ -670,7 +672,7 @@ int smartbattery_get_cell_config(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	config->code = rx_data.code;
@@ -682,7 +684,7 @@ int smartbattery_get_cell_config(
 		config->code_name = "unknown";
 		break;
 	default:
-		ret = -1;
+		config->code_name = "unknown";
 		break;
 	}
 
@@ -702,7 +704,7 @@ int smartbattery_get_manufacturer(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	memcpy(manufacturer->name, rx_data.name,
@@ -733,7 +735,7 @@ int smartbattery_get_device_info(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	memcpy(device_info->name, rx_data.name,
@@ -763,7 +765,7 @@ int smartbattery_get_hw_version(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	hw_version->version = rx_data.version;
@@ -776,7 +778,7 @@ int smartbattery_write_flash(
 		struct smartbattery_device *device,
 		const struct smartbattery_flash_chunk *chunk)
 {
-	int ret = -1;
+	int ret = -EINVAL;
 	struct write_flash_tx tx_data = {
 		.req_id = I2C_CMD_WRITE_FLASH,
 		.address = chunk->address,
@@ -786,7 +788,7 @@ int smartbattery_write_flash(
 	int count = 10;
 
 	if ((chunk->length & 1) == 1)
-		return -1;
+		goto out;
 
 	if (tx_data.length > SMARTBATTERY_FLASH_BUFFER_SIZE)
 		tx_data.length = SMARTBATTERY_FLASH_BUFFER_SIZE;
@@ -807,6 +809,7 @@ int smartbattery_write_flash(
 		msleep(10);
 	}
 
+out:
 	return ret;
 }
 
@@ -822,7 +825,7 @@ int smartbattery_get_serial(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	memcpy(serial->serial_number, rx_data.serial,
@@ -853,7 +856,7 @@ int smartbattery_get_log(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	header = le32toh(rx_data.header);
@@ -879,7 +882,7 @@ int smartbattery_set_leds(
 		struct smartbattery_device *device,
 		const struct smartbattery_leds *leds)
 {
-	int ret = -1;
+	int ret;
 	int i;
 	int j;
 	struct set_leds_tx tx_data;
@@ -1064,7 +1067,7 @@ int smartbattery_get_usb_peer(
 	ret = request(device, tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
 
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	peer->connected = rx_data.connected;
@@ -1080,13 +1083,13 @@ int smartbattery_get_mode(
 	struct smartbattery_device *device,
 	struct smartbattery_mode *mode)
 {
-	int ret = -1;
+	int ret;
 	uint8_t tx_data[] = { I2C_REQ_GET_MODE };
 	struct get_mode_rx rx_data;
 
 	ret = request(device, (uint8_t *)&tx_data, sizeof(tx_data),
 		(uint8_t *)&rx_data, sizeof(rx_data));
-	if (ret != 0)
+	if (ret < 0)
 		goto out;
 
 	mode->system_mode = rx_data.system_mode;
@@ -1099,7 +1102,7 @@ int smartbattery_set_mode(
 	struct smartbattery_device *device,
 	const struct smartbattery_mode *mode)
 {
-	int ret = -1;
+	int ret;
 	struct set_mode_tx tx_data;
 	struct set_mode_rx rx_data;
 
@@ -1144,7 +1147,7 @@ int smartbattery_wintering(
 	struct smartbattery_device *device,
 	const struct smartbattery_wintering *wintering)
 {
-	int ret = -1;
+	int ret;
 	struct wintering_tx tx_data;
 	struct wintering_rx rx_data;
 
@@ -1166,26 +1169,29 @@ int smartbattery_i2c_bridge_async(
 	struct smartbattery_device *device,
 	struct smartbattery_i2c_request *i2c_request)
 {
-	int ret = -1;
-	int rc;
+	int ret;
 	size_t count;
 
-	rc = smartbattery_i2c_bridge_request(device, i2c_request);
-	if (rc < 0)
+	ret = smartbattery_i2c_bridge_request(device, i2c_request);
+	if (ret < 0) {
+		dev_warn(&device->client->dev,
+			"Error in sending I2C Bridge Request\n");
 		goto out;
+	}
 
 	count = 10;
 	/* loop a bit while remote processing is not terminated */
 	while (count--) {
 		msleep(1);
-		rc = smartbattery_i2c_bridge_response(device, i2c_request);
-		if (rc == -4)
+		ret = smartbattery_i2c_bridge_response(device, i2c_request);
+		if (ret == -EBUSY)
 			continue;
-		if (rc == 0) {
-			ret = 0;
-			break;
-		}
+		if (ret == 0)
+			goto out;
+		break;
 	}
+	dev_warn(&device->client->dev, "Bridge Timeout\n");
+	ret = -ETIMEDOUT;
 
 out:
 	return ret;
@@ -1195,7 +1201,7 @@ int smartbattery_i2c_bridge_request(
 	struct smartbattery_device *device,
 	const struct smartbattery_i2c_request *i2c_request)
 {
-	int ret = -1;
+	int ret;
 	struct i2c_request_tx tx_request;
 	struct i2c_request_rx rx_request;
 	uint8_t buffer[128];
@@ -1237,14 +1243,16 @@ int smartbattery_i2c_bridge_response(
 	struct smartbattery_device *device,
 	struct smartbattery_i2c_request *i2c_request)
 {
-	int ret = -1;
+	int ret;
 	uint8_t tx_response[] = { I2C_CMD_I2C_RESPONSE };
 	struct i2c_response_rx rx_response;
 	uint8_t size;
 	uint8_t buffer[128];
 
-	if (i2c_request->rx_length > sizeof(i2c_request->rx_data))
+	if (i2c_request->rx_length > sizeof(i2c_request->rx_data)) {
+		ret = -EINVAL;
 		goto out;
+	}
 
 	memset(&rx_response, 0, sizeof(rx_response));
 
@@ -1259,12 +1267,12 @@ int smartbattery_i2c_bridge_response(
 	memcpy(&rx_response, buffer, sizeof(rx_response));
 
 	if (rx_response.status != 0) {
-		ret = -4;
+		ret = -EBUSY;
 		goto out;
 	}
 
 	if (rx_response.result != 0) {
-		ret = -1;
+		ret = -EIO;
 		goto out;
 	}
 
@@ -1278,7 +1286,7 @@ int smartbattery_notify_action(
 	struct smartbattery_device *device,
 	struct smartbattery_action *action)
 {
-	int ret = -1;
+	int ret;
 	struct notify_action_tx tx_data;
 	struct notify_action_rx rx_data;
 
@@ -1296,7 +1304,7 @@ int smartbattery_notify_action(
 		goto out;
 
 	if (rx_data.result != 0) {
-		ret = -1;
+		ret = -EPERM;
 		goto out;
 	}
 
@@ -1451,7 +1459,8 @@ int smartbattery_write_data(
 		struct smartbattery_flash_area *area,
 		const uint8_t *data)
 {
-	int ret = -1;
+	int ret;
+	int rc;
 	struct smartbattery_flash_chunk chunk;
 	uint16_t address;
 	uint16_t length;
@@ -1465,7 +1474,9 @@ int smartbattery_write_data(
 		chunk.address = address;
 		chunk.length = length;
 		memcpy(chunk.data, p, length);
-		if (smartbattery_write_flash(device, &chunk) < 0) {
+		rc = smartbattery_write_flash(device, &chunk);
+		if (rc < 0) {
+			ret = rc;
 			dev_err(&device->client->dev,
 					"Write flash failed 0x%.4x / %u\n",
 					address, length);
@@ -1571,7 +1582,7 @@ int smartbattery_wait_active(
 		struct smartbattery_state *state,
 		int timeout_ms)
 {
-	int ret = -1;
+	int ret = -ETIMEDOUT;
 	int step_ms = WAIT_ACTIVE_STEP_MS;
 	int rc;
 
@@ -1594,20 +1605,24 @@ int smartbattery_start_app(
 	struct smartbattery_state *state,
 	int timeout_ms)
 {
-	int ret = -1;
+	int ret;
 	int rc;
 
 	rc = reset_to(device, SMARTBATTERY_PARTITION_APPLICATION);
-	if (rc < 0)
+	if (rc < 0) {
+		ret = rc;
 		goto out;
+	}
 	if (state != NULL) {
 		rc = smartbattery_wait_active(device, state, timeout_ms);
 		if (rc < 0) {
+			ret = rc;
 			dev_err(&device->client->dev,
 					"Wait active app has failed\n");
 			goto out;
 		}
 		if (state->system_state != SMARTBATTERY_SYSTEM_READY) {
+			ret = -EIO;
 			dev_err(&device->client->dev, "Not Ready\n");
 			goto out;
 		}
@@ -1622,20 +1637,24 @@ int smartbattery_start_upd(
 	struct smartbattery_state *state,
 	int timeout_ms)
 {
-	int ret = -1;
+	int ret;
 	int rc;
 
 	rc = reset_to(device, SMARTBATTERY_PARTITION_UPDATER);
-	if (rc < 0)
+	if (rc < 0) {
+		ret = rc;
 		goto out;
+	}
 	if (state != NULL) {
 		rc = smartbattery_wait_active(device, state, timeout_ms);
 		if (rc < 0) {
+			ret = rc;
 			dev_err(&device->client->dev,
 					"Wait active upd has failed\n");
 			goto out;
 		}
 		if (state->system_state != SMARTBATTERY_SYSTEM_UPDATER) {
+			ret = -EIO;
 			dev_err(&device->client->dev, "Not in Updater\n");
 			goto out;
 		}
@@ -1650,15 +1669,14 @@ int smartbattery_reset(
 	struct smartbattery_state *state,
 	int timeout_ms)
 {
-	int ret = -1;
-	int rc;
+	int ret;
 
-	rc = reset_to(device, SMARTBATTERY_PARTITION_BOOTLOADER);
-	if (rc < 0)
+	ret = reset_to(device, SMARTBATTERY_PARTITION_BOOTLOADER);
+	if (ret < 0)
 		goto out;
 	if (state != NULL) {
-		rc = smartbattery_wait_active(device, state, timeout_ms);
-		if (rc < 0)
+		ret = smartbattery_wait_active(device, state, timeout_ms);
+		if (ret < 0)
 			goto out;
 	}
 	ret = 0;

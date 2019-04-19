@@ -36,7 +36,7 @@
 #include "smartbattery.h"
 
 /* timeout to let Smartbattery starts after reset */
-#define RESET_TIMEOUT_MS 2000
+#define RESET_TIMEOUT_MS 2500
 
 #if defined(CONFIG_PARROT_SMARTBATTERY_KTHREAD_PRIO)
 #define SMARTBATTERY_TASK_PRIORITY CONFIG_PARROT_SMARTBATTERY_KTHREAD_PRIO

@@ -1,5 +1,5 @@
 Open Source Software used in **Parrot Anafi**.  
-Firmware version: **1.0.0**  
+Firmware version: **1.0.1**  
 Unless stated otherwise, later versions of the firmware
 use these same software modules.
 
