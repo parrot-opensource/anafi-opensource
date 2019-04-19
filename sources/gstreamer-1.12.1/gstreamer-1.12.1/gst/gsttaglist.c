@@ -141,6 +141,9 @@ _priv_gst_tag_initialize (void)
       GST_TYPE_DATE_TIME, _("datetime"),
       _("date and time the data was created (as a GstDateTime structure)"),
       NULL);
+  gst_tag_register_static (GST_TAG_TIME_MSECONDS, GST_TAG_FLAG_META,
+     G_TYPE_UINT, _("milliseconds"),
+     _("milliseconds for the datetime tag"), NULL);
   gst_tag_register_static (GST_TAG_GENRE, GST_TAG_FLAG_META,
       G_TYPE_STRING,
       _("genre"),

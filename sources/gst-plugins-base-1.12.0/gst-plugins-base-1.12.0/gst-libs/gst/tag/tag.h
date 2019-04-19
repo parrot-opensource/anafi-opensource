@@ -463,6 +463,18 @@ G_BEGIN_DECLS
 #define GST_TAG_IMAGE_VERTICAL_PPI           "image-vertical-ppi"
 
 /**
+ * GST_TAG_PHOTO_MODE:
+ *
+ * Tells in which mode the picture have been captured. (string)
+ *
+ * Allowed values:
+ *   "Single"
+ *   "Burst"
+ *   "Bracketing"
+ */
+#define GST_TAG_PHOTO_MODE                         "photo-mode"
+
+/**
  * GST_TAG_DRONE_ROLL:
  *
  * Drone body roll (phi) angle in NED frame

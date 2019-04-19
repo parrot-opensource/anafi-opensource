@@ -62,6 +62,10 @@ static int request(struct smartbattery_device *device,
 	int nb_send;
 	int nb_recv;
 	uint8_t sum;
+	const char *level = KERN_WARNING;
+
+	if (device->device_is_resetting)
+		level = KERN_INFO;
 
 	if ((tx_data == NULL) ||
 		(tx_size == 0) ||
@@ -73,7 +77,8 @@ static int request(struct smartbattery_device *device,
 
 	nb_send = i2c_master_send(device->client, tx_data, tx_size);
 	if (nb_send != tx_size) {
-		dev_warn(
+		dev_printk(
+			level,
 			&device->client->dev,
 			"%s(): send error\n", __func__);
 		ret = -EIO;
@@ -82,14 +87,16 @@ static int request(struct smartbattery_device *device,
 
 	nb_recv = i2c_master_recv(device->client, rx_data, rx_size);
 	if (nb_recv != rx_size) {
-		dev_warn(
+		dev_printk(
+			level,
 			&device->client->dev,
 			"%s(): receive error\n", __func__);
 		ret = -EIO;
 		goto out;
 	}
 	if (tx_data[0] != rx_data[0]) {
-		dev_warn(
+		dev_printk(
+			level,
 			&device->client->dev,
 			"Bad Req ID (0x%x != 0x%x)\n",
 			tx_data[0], rx_data[0]);
@@ -99,7 +106,8 @@ static int request(struct smartbattery_device *device,
 	sum = compute_checksum(rx_data, rx_size-1);
 	/* checksum always at last position */
 	if (sum != rx_data[rx_size-1]) {
-		dev_warn(
+		dev_printk(
+			level,
 			&device->client->dev,
 			"Bad Checksum (0x%.4x != 0x%.4x)\n",
 			sum, rx_data[rx_size-1]);
@@ -1608,6 +1616,8 @@ int smartbattery_start_app(
 	int ret;
 	int rc;
 
+	device->device_is_resetting = true;
+
 	rc = reset_to(device, SMARTBATTERY_PARTITION_APPLICATION);
 	if (rc < 0) {
 		ret = rc;
@@ -1629,6 +1639,8 @@ int smartbattery_start_app(
 	}
 	ret = 0;
 out:
+	device->device_is_resetting = false;
+
 	return ret;
 }
 
@@ -1639,6 +1651,8 @@ int smartbattery_start_upd(
 {
 	int ret;
 	int rc;
+
+	device->device_is_resetting = true;
 
 	rc = reset_to(device, SMARTBATTERY_PARTITION_UPDATER);
 	if (rc < 0) {
@@ -1661,6 +1675,8 @@ int smartbattery_start_upd(
 	}
 	ret = 0;
 out:
+	device->device_is_resetting = false;
+
 	return ret;
 }
 
@@ -1670,6 +1686,8 @@ int smartbattery_reset(
 	int timeout_ms)
 {
 	int ret;
+
+	device->device_is_resetting = true;
 
 	ret = reset_to(device, SMARTBATTERY_PARTITION_BOOTLOADER);
 	if (ret < 0)
@@ -1681,5 +1699,7 @@ int smartbattery_reset(
 	}
 	ret = 0;
 out:
+	device->device_is_resetting = false;
+
 	return ret;
 }

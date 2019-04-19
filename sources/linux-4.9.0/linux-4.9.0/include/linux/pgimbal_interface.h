@@ -20,7 +20,7 @@ enum pgimbal_rpmsg_type {
 	PGIMBAL_RPMSG_TYPE_INVALID = 0,
 
 	PGIMBAL_RPMSG_TYPE_CALIBRATION_REQUEST,		/* TX in - LX out */
-	PGIMBAL_RPMSG_TYPE_ALERT,			/* TX out - LX in */
+	PGIMBAL_RPMSG_TYPE_ALERTS,			/* TX out - LX in */
 	PGIMBAL_RPMSG_TYPE_OFFSETS_UPDATE_STARTED,	/* TX in - LX out */
 	PGIMBAL_RPMSG_TYPE_OFFSETS_UPDATE_STOPPED,	/* TX in - LX out */
 	PGIMBAL_RPMSG_TYPE_OFFSET,			/* TX and LX in/out */
@@ -43,10 +43,18 @@ struct pgimbal_offset_info {
 	int offset;
 };
 
+enum pgimbal_alerts_type {
+	PGIMBAL_ALERT_TYPE_CALIBRATION = (1 << 0),
+	PGIMBAL_ALERT_TYPE_OVERLOAD = (1 << 1),
+	PGIMBAL_ALERT_TYPE_COMMUNICATION = (1 << 2),
+	PGIMBAL_ALERT_TYPE_CRITICAL = (1 << 3),
+};
+
 struct pgimbal_rpmsg {
 	enum pgimbal_rpmsg_type type;
 	union {
 		struct pgimbal_offset_info offset_info;
+		uint8_t alerts;
 	};
 };
 

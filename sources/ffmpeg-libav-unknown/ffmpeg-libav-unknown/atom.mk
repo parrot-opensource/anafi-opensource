@@ -75,6 +75,12 @@ LOCAL_AUTOTOOLS_CONFIGURE_ARGS += \
 	--enable-encoder=aac
 endif
 
+ifdef CONFIG_FFMPEG_MOV_FORMAT
+LOCAL_AUTOTOOLS_CONFIGURE_ARGS += \
+	--enable-demuxer=mov \
+	--enable-muxer=mov
+endif
+
 ifdef CONFIG_FFMPEG_ENABLE_CUVID
 # WARNING: non-free software is enabled in this configuration,
 # the software must not be distributed with cuvid enabled.

@@ -24,40 +24,23 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SMARTBATTERY_GAUGE_H
-#define SMARTBATTERY_GAUGE_H
+#ifndef SMARTBATTERY_TPS_H
+#define SMARTBATTERY_TPS_H
 
 #include "smartbattery_device.h"
 
-int smartbattery_gauge_get_fw_version(struct smartbattery* sb);
-
-int smartbattery_gauge_get_signatures(struct smartbattery* sb);
-
-int smartbattery_gauge_get_date(struct smartbattery* sb);
-
-static inline void smartbattery_gauge_value2date(
-		uint16_t value,
-		uint8_t *day,
-		uint8_t *month,
-		uint16_t *year)
-{
-	*year = (value / 512) + 1980;
-	value %= 512;
-	*month = (value / 32);
-	value %= 32;
-	*day = value;
-}
-
-int smartbattery_gauge_get_design_capacity(
+int smartbattery_tps_get_device_id(
 	struct smartbattery *sb,
-	uint16_t *value_p);
+	uint32_t *value_p);
 
-int smartbattery_gauge_get_device_type(
+int smartbattery_tps_get_mode(
 	struct smartbattery *sb,
-	uint16_t *value_p);
+	char *value,
+	size_t size);
 
-int smartbattery_gauge_get_chem_id(
+int smartbattery_tps_get_device_info(
 	struct smartbattery *sb,
-	uint16_t *value_p);
+	char *value,
+	size_t size);
 
-#endif /* SMARTBATTERY_GAUGE_H */
+#endif /* SMARTBATTERY_TPS_H */

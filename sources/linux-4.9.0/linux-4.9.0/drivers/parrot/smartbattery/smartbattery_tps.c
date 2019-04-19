@@ -24,40 +24,86 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SMARTBATTERY_GAUGE_H
-#define SMARTBATTERY_GAUGE_H
-
+#include "smartbattery.h"
 #include "smartbattery_device.h"
+#include "smartbattery_common.h"
+#include "smartbattery_misc.h"
+#include "smartbattery_tps.h"
 
-int smartbattery_gauge_get_fw_version(struct smartbattery* sb);
+#define REGISTER_DID                           0x01
+#define REGISTER_MODE                          0x03
+#define REGISTER_DEVICE_INFO                   0x2F
 
-int smartbattery_gauge_get_signatures(struct smartbattery* sb);
-
-int smartbattery_gauge_get_date(struct smartbattery* sb);
-
-static inline void smartbattery_gauge_value2date(
-		uint16_t value,
-		uint8_t *day,
-		uint8_t *month,
-		uint16_t *year)
+static int tps_read_reg(
+	struct smartbattery *sb,
+	uint8_t reg,
+	void *rx_data,
+	int rx_len)
 {
-	*year = (value / 512) + 1980;
-	value %= 512;
-	*month = (value / 32);
-	value %= 32;
-	*day = value;
+	int ret;
+	struct smartbattery_i2c_request i2c_request;
+
+	i2c_request.component = SMARTBATTERY_USB;
+	i2c_request.tx_length = 1;
+	i2c_request.rx_length = rx_len+1;
+	i2c_request.tx_data[0] = reg;
+
+	ret = smartbattery_i2c_bridge_async(&sb->device, &i2c_request);
+	if (ret < 0)
+		goto out;
+
+	memcpy(rx_data, i2c_request.rx_data+1, rx_len);
+
+out:
+	return ret;
 }
 
-int smartbattery_gauge_get_design_capacity(
+int smartbattery_tps_get_device_id(
 	struct smartbattery *sb,
-	uint16_t *value_p);
+	uint32_t *value_p)
+{
+	int ret;
+	uint8_t val[4];
 
-int smartbattery_gauge_get_device_type(
+	ret = tps_read_reg(sb, REGISTER_DID, val, sizeof(val));
+	if (ret < 0)
+		goto out;
+
+	*value_p = get_le32(val);
+out:
+	return ret;
+}
+
+int smartbattery_tps_get_mode(
 	struct smartbattery *sb,
-	uint16_t *value_p);
+	char *value,
+	size_t size)
+{
+	int ret;
 
-int smartbattery_gauge_get_chem_id(
+	if (size != 5)
+		return -EINVAL;
+
+	ret = tps_read_reg(sb, REGISTER_MODE, value, 4);
+
+	value[4] = 0;
+
+	return ret;
+}
+
+int smartbattery_tps_get_device_info(
 	struct smartbattery *sb,
-	uint16_t *value_p);
+	char *value,
+	size_t size)
+{
+	int ret;
 
-#endif /* SMARTBATTERY_GAUGE_H */
+	if (size != 9)
+		return -EINVAL;
+
+	ret = tps_read_reg(sb, REGISTER_DEVICE_INFO, value, 8);
+
+	value[8] = 0;
+
+	return ret;
+}

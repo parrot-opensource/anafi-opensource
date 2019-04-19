@@ -55,4 +55,19 @@ static inline uint16_t get_le16(const uint8_t* p)
 	return ret;
 }
 
+static inline uint32_t get_le32(const uint8_t* p)
+{
+	uint32_t ret;
+
+	ret = p[3];
+	ret <<= 8;
+	ret |= p[2];
+	ret <<= 8;
+	ret |= p[1];
+	ret <<= 8;
+	ret |= p[0];
+
+	return ret;
+}
+
 #endif /* SMARTBATTERY_MISC_H */

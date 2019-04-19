@@ -36,6 +36,7 @@
 #include <linux/kthread.h>
 #include <linux/kernel.h>
 
+#include "smartbattery_auth.h"
 #include "smartbattery_common.h"
 #include "smartbattery_misc.h"
 #include "smartbattery_crc16.h"
@@ -113,15 +114,30 @@ static void check_state(struct smartbattery *sb)
 		power_ok = true;
 }
 
+/* no mercy for un-authenticated devices */
+static void smartbattery_process_unauthenticated(
+		struct smartbattery *sb,
+		struct smartbattery_gauge *gauge)
+{
+	gauge->rsoc.value = 2;
+	gauge->remaining_cap.value = 30;
+	gauge->voltage.value = 6900;
+}
+
 static int acquisition(struct smartbattery *sb)
 {
-	int ret = -EIO;
+	int ret = -ENODEV;
 	int rc;
+	struct smartbattery_gauge gauge;
 
 	dev_dbg(&sb->device.client->dev, "acquisition()\n");
 
 	if (!sb->present)
-		return -ENODEV;
+		goto out;
+
+	ret = -EIO;
+
+	gauge = sb->gauge;
 
 	rc = smartbattery_get_state(&sb->device, &sb->state);
 	if (rc != 0)
@@ -134,7 +150,7 @@ static int acquisition(struct smartbattery *sb)
 	check_state(sb);
 
 	if (sb->state.components.gauge_ok) {
-		rc = smartbattery_get_gauge(&sb->device, &sb->gauge);
+		rc = smartbattery_get_gauge(&sb->device, &gauge);
 		if (rc < 0)
 			dev_err(&sb->device.client->dev,
 					"Gauge Acquisition Error\n");
@@ -154,6 +170,21 @@ static int acquisition(struct smartbattery *sb)
 	rc = smartbattery_get_alerts(&sb->device, &sb->alerts);
 	if (rc < 0)
 		dev_err(&sb->device.client->dev, "Alerts error\n");
+
+	if (!smartbattery_auth_check(sb))
+		sb->is_authenticated = false;
+
+	if (!sb->is_authenticated) {
+		static bool first_log_display = true;
+		if (first_log_display)
+			dev_warn(
+				&sb->device.client->dev,
+				"Unauthenticated Smartbattery detected\n");
+		smartbattery_process_unauthenticated(sb, &gauge);
+		first_log_display = false;
+	}
+
+	sb->gauge = gauge;
 
 	ret = 0;
 out:
@@ -211,16 +242,42 @@ static ssize_t show_kthread_prio(
 	return sprintf(buf, "%d\n", kthread_prio);
 }
 
+static ssize_t store_authenticate(struct device *dev,
+		struct device_attribute *attr,
+		const char *buf, size_t count)
+{
+	struct smartbattery *sb = dev_get_drvdata(dev);
+	bool res;
+
+	if (!sb->present)
+		return -ENODEV;
+
+	if (!strncmp(buf, "ko", sizeof("ko")-1)) {
+		sb->is_authenticated = false;
+		return count;
+	}
+
+	res = smartbattery_auth_check_full(sb);
+	if (!res) {
+		sb->is_authenticated = false;
+		return -EIO;
+	}
+
+	return count;
+}
+
 static DEVICE_ATTR(update_time, S_IRUSR, show_update_time, NULL);
 static DEVICE_ATTR(allow_downgrade, S_IRUSR, show_allow_downgrade, NULL);
 static DEVICE_ATTR(firmware_name, S_IRUSR, show_firmware_name, NULL);
 static DEVICE_ATTR(kthread_prio, S_IRUSR, show_kthread_prio, NULL);
+static DEVICE_ATTR(authenticate, S_IWUSR, NULL, store_authenticate);
 
 static struct attribute *smartbattery_attrs[] = {
 	&dev_attr_update_time.attr,
 	&dev_attr_allow_downgrade.attr,
 	&dev_attr_firmware_name.attr,
 	&dev_attr_kthread_prio.attr,
+	&dev_attr_authenticate.attr,
 	NULL,
 };
 
@@ -287,6 +344,9 @@ static int smartbattery_i2c_probe(struct i2c_client *client,
 	sb->device.client = client;
 
 	sema_init(&sb->device.lock, 1);
+
+	/* by default, we trust the Smartbattery */
+	sb->is_authenticated = true;
 
 	smartbattery_read_info(sb);
 

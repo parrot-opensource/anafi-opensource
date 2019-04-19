@@ -1179,6 +1179,8 @@ _init_xmp_tag_map (gpointer user_data)
       "drone-parrot:RunId", GstXmpTagTypeSimple, NULL, NULL);
   _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_BOOT_ID,
       "drone-parrot:BootId", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PHOTO_MODE,
+      "drone-parrot:PhotoMode", GstXmpTagTypeSimple, NULL, NULL);
   _gst_xmp_add_schema ("drone-parrot", schema);
 
   return NULL;

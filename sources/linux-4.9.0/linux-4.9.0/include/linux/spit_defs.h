@@ -399,6 +399,8 @@ struct spit_ae_ev {
 enum spit_ae_mode {
 	SPIT_AE_MODE_AUTOMATIC_PREFER_ISO = 0,
 	SPIT_AE_MODE_AUTOMATIC_PREFER_SHUTTER,
+	SPIT_AE_MODE_MANUAL_ISO,
+	SPIT_AE_MODE_MANUAL_SHUTTER,
 	SPIT_AE_MODE_MANUAL,
 
 	SPIT_AE_MODE_COUNT,
@@ -467,8 +469,8 @@ enum spit_img_style {
 struct spit_img_settings {
 	uint32_t saturation; /*!< Saturate / desaturate image
 			      * From 0 to 256 (default at 64) */
-	uint32_t sharpness; /*!< Increase / descrease sharpness
-			     * From 0 to 6 (default at 3) */
+	float sharpness; /*!< Increase / decrease sharpness
+			     * From 0.5 to 2 (default at 1) */
 	uint32_t contrast; /*!< Increase / decrease contrast
 			    * From 0 to 256 (default at 64) */
 };

@@ -1409,8 +1409,19 @@ static void udc_epout_interrupt(struct ambarella_udc *udc, u32 ep_id)
 			return;
 		}
 
+		if (ambarella_check_bna_error(ep, ep_status)) {
+			struct ambarella_request *req = NULL;
+			pr_err("%s: ep is error 0x%08x\n", ep->ep.name, ep_status);
+			req = list_first_entry(&ep->queue,
+				struct ambarella_request, queue);
+			/* Parrot: read() will return 0 to let application read again */
+			req->req.status = 0;
+			ambarella_udc_done(ep, req, 0);
+			return;
+		}
+
 		/* here we know that list is not empty */
-		if(ambarella_check_he_error(ep, ep_status) || ambarella_check_bna_error(ep, ep_status)) {
+		if(ambarella_check_he_error(ep, ep_status)) {
 			struct ambarella_request *req = NULL;
 			pr_err("%s: ep is error 0x%08x\n", ep->ep.name, ep_status);
 			req = list_first_entry(&ep->queue,

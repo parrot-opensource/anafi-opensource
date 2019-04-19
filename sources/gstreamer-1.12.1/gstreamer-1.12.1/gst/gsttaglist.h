@@ -550,6 +550,13 @@ gst_tag_list_copy (const GstTagList * taglist)
  */
 #define GST_TAG_DATE_TIME              "datetime"
 /**
+ * GST_TAG_TIME_MSECONDS:
+ *
+ * fractions of seconds for the "datetime" tag in milliseconds (unsigned
+ * integer)
+ */
+#define GST_TAG_TIME_MSECONDS      "milliseconds"
+/**
  * GST_TAG_GENRE:
  *
  * genre this data belongs to (string)

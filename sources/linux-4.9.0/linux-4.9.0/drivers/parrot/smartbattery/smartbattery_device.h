@@ -79,6 +79,8 @@ struct smartbattery {
 	bool application_valid;
 	bool updater_valid;
 	/* */
+	bool is_authenticated;
+	/* */
 	bool simu_enable;
 	int simu_rsoc;
 	int simu_voltage;

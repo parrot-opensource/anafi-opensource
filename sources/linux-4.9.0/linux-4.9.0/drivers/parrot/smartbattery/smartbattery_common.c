@@ -251,19 +251,19 @@ int smartbattery_read_info(struct smartbattery *sb)
 	rc = smartbattery_set_mode(&sb->device, &mode);
 	if (rc != 0)
 		dev_warn(&sb->device.client->dev,
-				"Cannot go to Maintenance\n");
+				"Cannot go to Maintenance Mode\n");
 
-	rc = smartbattery_get_gauge_fw_version(sb);
+	rc = smartbattery_gauge_get_fw_version(sb);
 	if (rc != 0)
 		dev_warn(&sb->device.client->dev,
 				"Cannot get Gauge FW Version\n");
 
-	rc = smartbattery_get_gauge_signatures(sb);
+	rc = smartbattery_gauge_get_signatures(sb);
 	if (rc != 0)
 		dev_warn(&sb->device.client->dev,
 				"Cannot get Gauge Signatures\n");
 
-	rc = smartbattery_get_gauge_date(sb);
+	rc = smartbattery_gauge_get_date(sb);
 	if (rc != 0)
 		dev_warn(&sb->device.client->dev,
 				"Cannot get Gauge Date\n");
@@ -272,7 +272,7 @@ int smartbattery_read_info(struct smartbattery *sb)
 	rc = smartbattery_set_mode(&sb->device, &mode);
 	if (rc != 0)
 		dev_warn(&sb->device.client->dev,
-				"Cannot go to Maintenance\n");
+				"Cannot go to Normal Mode\n");
 
 	ret = 0;
 out:

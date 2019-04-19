@@ -24,40 +24,85 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SMARTBATTERY_GAUGE_H
-#define SMARTBATTERY_GAUGE_H
-
+#include "smartbattery.h"
 #include "smartbattery_device.h"
+#include "smartbattery_charger.h"
 
-int smartbattery_gauge_get_fw_version(struct smartbattery* sb);
+#define REG_OPTION_0 0x00
+#define REG_MANUFACTURER_ID 0x2E
+#define REG_DEVICE_ID 0x2F
 
-int smartbattery_gauge_get_signatures(struct smartbattery* sb);
-
-int smartbattery_gauge_get_date(struct smartbattery* sb);
-
-static inline void smartbattery_gauge_value2date(
-		uint16_t value,
-		uint8_t *day,
-		uint8_t *month,
-		uint16_t *year)
+static int charger_read_u8(
+	struct smartbattery *sb,
+	uint8_t reg,
+	uint8_t *value_p)
 {
-	*year = (value / 512) + 1980;
-	value %= 512;
-	*month = (value / 32);
-	value %= 32;
-	*day = value;
+	int ret = -ENODEV;
+	struct smartbattery_i2c_request i2c_request;
+
+	if (!sb->present)
+		goto out;
+
+	i2c_request.component = SMARTBATTERY_CHARGER;
+	i2c_request.tx_length = 1;
+	i2c_request.rx_length = 1;
+	i2c_request.tx_data[0] = reg;
+
+	ret = smartbattery_i2c_bridge_async(&sb->device, &i2c_request);
+	if (ret < 0)
+		goto out;
+
+	*value_p = i2c_request.rx_data[0];
+
+out:
+	return ret;
 }
 
-int smartbattery_gauge_get_design_capacity(
+static int charger_read_u16(
 	struct smartbattery *sb,
-	uint16_t *value_p);
+	uint8_t reg,
+	uint16_t *value_p)
+{
+	int ret = -ENODEV;
+	struct smartbattery_i2c_request i2c_request;
 
-int smartbattery_gauge_get_device_type(
+	if (!sb->present)
+		goto out;
+
+	i2c_request.component = SMARTBATTERY_CHARGER;
+	i2c_request.tx_length = 1;
+	i2c_request.rx_length = 2;
+	i2c_request.tx_data[0] = reg;
+
+	ret = smartbattery_i2c_bridge_async(&sb->device, &i2c_request);
+	if (ret < 0)
+		goto out;
+
+	*value_p = i2c_request.rx_data[1];
+	*value_p <<= 8;
+	*value_p |= i2c_request.rx_data[0];
+
+out:
+	return ret;
+}
+
+int smartbattery_charger_get_device_id(
 	struct smartbattery *sb,
-	uint16_t *value_p);
+	uint8_t *value_p)
+{
+	return charger_read_u8(sb, REG_DEVICE_ID, value_p);
+}
 
-int smartbattery_gauge_get_chem_id(
+int smartbattery_charger_get_manufacturer_id(
 	struct smartbattery *sb,
-	uint16_t *value_p);
+	uint8_t *value_p)
+{
+	return charger_read_u8(sb, REG_MANUFACTURER_ID, value_p);
+}
 
-#endif /* SMARTBATTERY_GAUGE_H */
+int smartbattery_charger_get_option0(
+	struct smartbattery *sb,
+	uint16_t *value_p)
+{
+	return charger_read_u16(sb, REG_OPTION_0, value_p);
+}

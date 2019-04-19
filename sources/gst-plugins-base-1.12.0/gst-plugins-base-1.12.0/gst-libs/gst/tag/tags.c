@@ -242,6 +242,10 @@ gst_tag_register_tags_internal (gpointer unused)
       G_TYPE_STRING, _("musical-key"), _("Initial key in which the "
           "sound starts"), gst_tag_merge_use_first);
 
+  gst_tag_register_static (GST_TAG_PHOTO_MODE, GST_TAG_FLAG_META, G_TYPE_STRING,
+       _("photo-mode"), _("Photo Mode in which the photo have been taken."),
+      NULL);
+
   gst_tag_register_static (GST_TAG_DRONE_ROLL, GST_TAG_FLAG_META,
       G_TYPE_FLOAT, _("drone-roll"), _("Drone roll angle in NED"), NULL);
 

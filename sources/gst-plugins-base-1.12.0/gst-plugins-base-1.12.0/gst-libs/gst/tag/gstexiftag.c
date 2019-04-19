@@ -323,6 +323,9 @@ EXIF_DESERIALIZATION_FUNC (add_to_pending_tags);
 #define EXIF_TAG_FLASH 0x9209
 #define EXIF_TAG_FOCAL_LENGTH 0x920A
 #define EXIF_TAG_MAKER_NOTE 0x927C
+#define EXIF_TAG_SUBSEC_TIME 0x9290
+#define EXIF_TAG_SUBSEC_TIME_ORIGINAL 0x9291
+#define EXIF_TAG_SUBSEC_TIME_DIGITIZED 0x9292
 #define EXIF_TAG_COLOR_SPACE 0xA001
 #define EXIF_TAG_PIXEL_X_DIMENSION 0xA002
 #define EXIF_TAG_PIXEL_Y_DIMENSION 0xA003
@@ -435,6 +438,12 @@ static const GstExifTagMatch tag_map_exif[] = {
       NULL, NULL},
   {GST_TAG_APPLICATION_DATA, EXIF_TAG_MAKER_NOTE, EXIF_TYPE_UNDEFINED, 0, NULL,
       NULL},
+  {GST_TAG_TIME_MSECONDS, EXIF_TAG_SUBSEC_TIME, EXIF_TYPE_ASCII, NULL, NULL,
+      NULL,},
+  {GST_TAG_TIME_MSECONDS, EXIF_TAG_SUBSEC_TIME_ORIGINAL, EXIF_TYPE_ASCII, NULL,
+      NULL, NULL},
+  {GST_TAG_TIME_MSECONDS, EXIF_TAG_SUBSEC_TIME_DIGITIZED, EXIF_TYPE_ASCII,
+      NULL, NULL, NULL},
   {NULL, EXIF_FLASHPIX_VERSION_TAG, EXIF_TYPE_UNDEFINED, 0, NULL, NULL},
   {GST_TAG_IMAGE_COLOR_SPACE, EXIF_TAG_COLOR_SPACE, EXIF_TYPE_SHORT, 0,
       serialize_color_space, deserialize_color_space},
@@ -937,9 +946,20 @@ write_exif_ascii_tag_from_taglist (GstExifWriter * writer,
 
   /* do some conversion if needed */
   switch (G_VALUE_TYPE (value)) {
-    case G_TYPE_STRING:
+    case G_TYPE_STRING: {
       str = (gchar *) g_value_get_string (value);
       break;
+    }
+    case G_TYPE_UINT: {
+      guint uvalue = g_value_get_uint (value);
+      /* Special case */
+      if (exiftag->exif_tag == GST_TAG_TIME_MSECONDS)
+        str = g_strdup_printf ("%3u", uvalue);
+      else
+        str = g_strdup_printf ("%u", uvalue);
+      cleanup = TRUE;
+      break;
+    }
     default:
       if (G_VALUE_TYPE (value) == GST_TYPE_DATE_TIME) {
         GstDateTime *dt = (GstDateTime *) g_value_get_boxed (value);

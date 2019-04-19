@@ -22,3 +22,8 @@ config FFMPEG_AAC_ENCODING
         prompt "enable AAC encoding"
         bool
         default n
+
+config FFMPEG_MOV_FORMAT
+        prompt "enable MOV muxer/demuxer"
+        bool
+        default n

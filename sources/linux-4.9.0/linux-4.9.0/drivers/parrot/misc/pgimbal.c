@@ -15,6 +15,7 @@
 #include <linux/module.h>
 #include <linux/rpmsg.h>
 #include <linux/fs.h>
+#include <linux/sysfs.h>
 #include <linux/string.h>
 
 #include <linux/slab.h>
@@ -33,6 +34,7 @@ struct pgimbal_drvdata {
 	struct mutex			lock;
 	wait_queue_head_t		wait_rpmsg;
 	enum pgimbal_state		state;
+	uint8_t				curr_alerts;
 	int				offsets_update_in_progress;
 	struct pgimbal_offset_info	curr_offsets[PGIMBAL_AXIS_COUNT];
 };
@@ -57,6 +59,16 @@ static ssize_t calibrate_store(struct device *dev,
 	dev_dbg(dev, "calibration request sent\n");
 
 	return count;
+}
+
+static ssize_t alerts_show(struct device *dev, struct device_attribute *attr,
+			  char *buf)
+{
+	struct rpmsg_device *rpdev = container_of(dev, struct rpmsg_device,
+						  dev);
+	struct pgimbal_drvdata *pgimbal_data = dev_get_drvdata(&rpdev->dev);
+
+	return sprintf(buf, "%u\n", pgimbal_data->curr_alerts);
 }
 
 static ssize_t offset_store(struct device *dev, struct device_attribute *attr,
@@ -196,6 +208,7 @@ static ssize_t offsets_update_trigger_store(struct device *dev,
 }
 static struct device_attribute pgimbal_sysfs_attrs[] = {
 	__ATTR(calibrate, S_IWUSR , NULL, calibrate_store),
+	__ATTR(alerts, S_IRUGO , alerts_show, NULL),
 	__ATTR(offset_x, S_IWUSR | S_IRUGO, offset_x_show, offset_x_store),
 	__ATTR(offset_y, S_IWUSR | S_IRUGO, offset_y_show, offset_y_store),
 	__ATTR(offset_z, S_IWUSR | S_IRUGO, offset_z_show, offset_z_store),
@@ -246,6 +259,12 @@ static int pgimbal_rpmsg_cb(struct rpmsg_device *rpdev, void *data, int len,
 		pgimbal_data->state = PGIMBAL_STATE_ANSWERED;
 		wake_up(&pgimbal_data->wait_rpmsg);
 		break;
+	case PGIMBAL_RPMSG_TYPE_ALERTS:
+		dev_dbg(pgimbal_data->dev, "alerts received: 0x%x\n",
+			rpmsg->alerts);
+		pgimbal_data->curr_alerts = rpmsg->alerts;
+		sysfs_notify(&rpdev->dev.kobj, NULL, "alerts");
+		break;
 	default:
 		break;
 	}
@@ -281,6 +300,7 @@ static int pgimbal_rpmsg_probe(struct rpmsg_device *rpdev)
 	init_waitqueue_head(&pgimbal_data->wait_rpmsg);
 
 	pgimbal_data->state = PGIMBAL_STATE_IDLE;
+	pgimbal_data->curr_alerts = 0;
 	dev_set_drvdata(&rpdev->dev, pgimbal_data);
 
 #ifdef CONFIG_SYSFS

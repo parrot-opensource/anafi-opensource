@@ -444,6 +444,7 @@ struct smartbattery_i2c_raw {
 struct smartbattery_device {
 	struct i2c_client *client;
 	struct semaphore lock;
+	bool device_is_resetting;
 };
 
 /* Application and Updater */
