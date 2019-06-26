@@ -1142,6 +1142,31 @@ gst_tag_list_copy (const GstTagList * taglist)
  */
 #define GST_TAG_BOOT_ID                               "boot-id"
 
+/**
+ * GST_TAG_THERMAL_SCALE_FACTOR:
+ *
+ * TODO: add more detail on what this value describes and how it can be used.
+ * Thermal scale factor (double)
+ */
+#define GST_TAG_THERMAL_SCALE_FACTOR "thermal-scale-factor"
+
+/**
+ * GST_TAG_THERMAL_VERSION:
+ *
+ * Thermal metadata version (string)
+ */
+#define GST_TAG_THERMAL_VERSION "thermal-version"
+
+/**
+ * GST_TAG_THERMAL_ALIGNMENT:
+ *
+ * Thermal metadata alignment between the main cam and thermal camera, as a
+ * string formatted as: "%f,%f,%f" where is value represent the yaw, pitch and
+ * roll angle in radian and in this order.
+ * (string)
+ */
+#define GST_TAG_THERMAL_ALIGNMENT "thermal-align"
+
 #ifdef G_DEFINE_AUTOPTR_CLEANUP_FUNC
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GstTagList, gst_tag_list_unref)
 #endif

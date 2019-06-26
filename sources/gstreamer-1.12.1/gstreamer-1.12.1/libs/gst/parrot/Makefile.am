@@ -3,7 +3,8 @@ lib_LTLIBRARIES = libgstparrot-@GST_API_VERSION@.la
 libgstparrot_@GST_API_VERSION@_la_DEPENDENCIES = \
 	$(top_builddir)/gst/libgstreamer-@GST_API_VERSION@.la
 libgstparrot_@GST_API_VERSION@_la_SOURCES = \
-	gstparrotelementmeta.c
+	gstparrotelementmeta.c \
+	gstparrotimagemeta.c
 
 libgstparrot_@GST_API_VERSION@_la_CFLAGS = $(GST_OBJ_CFLAGS)
 libgstparrot_@GST_API_VERSION@_la_LIBADD = $(GST_OBJ_LIBS)
@@ -13,7 +14,8 @@ libgstparrot_@GST_API_VERSION@includedir =		\
 	$(includedir)/gstreamer-@GST_API_VERSION@/gst/parrot
 
 libgstparrot_@GST_API_VERSION@include_HEADERS =	\
-	gstparrotelementmeta.h
+	gstparrotelementmeta.h \
+	gstparrotimagemeta.h
 
 CLEANFILES = *.gcno *.gcda *.gcov
 

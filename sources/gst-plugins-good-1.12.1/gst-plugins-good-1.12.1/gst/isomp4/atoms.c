@@ -1016,8 +1016,8 @@ atom_hdlr_free (AtomHDLR * hdlr)
   g_free (hdlr);
 }
 
-static void
-atom_hdlr_set_name (AtomHDLR * hdlr, const char *name)
+void
+atom_hdlr_set_name (AtomHDLR * hdlr, const char * name)
 {
   g_free (hdlr->name);
   hdlr->name = g_strdup (name);

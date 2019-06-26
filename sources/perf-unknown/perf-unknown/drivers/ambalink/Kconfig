@@ -1,0 +1,15 @@
+
+menuconfig ARCH_AMBARELLA_AMBALINK
+	bool "AmbaLink Support"
+        depends on ARCH_AMBARELLA
+        select AMBALINK_LOCK
+        select RPMSG_VIRTIO
+	help
+                This enables AmbaLink support for Ambarella ARMv8 SoC Family.
+
+if ARCH_AMBARELLA_AMBALINK
+
+source "drivers/ambalink/service/Kconfig"
+source "drivers/ambalink/rpc/Kconfig"
+
+endif

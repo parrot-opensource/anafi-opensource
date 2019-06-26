@@ -1089,6 +1089,34 @@ gst_qt_mux_add_mp4_meta_tag (GstQTMux * qtmux, const GstTagList * list,
         g_free (str);
         break;
       }
+    case G_TYPE_FLOAT:
+      {
+        gfloat val;
+        gchar *str;
+
+        if (!gst_tag_list_get_float (list, tag, &val))
+          break;
+
+        str = g_strdup_printf ("%f", val);
+        GST_DEBUG_OBJECT (qtmux, "Adding meta tag %s -> %s", key, str);
+        atom_meta_add_str_tag (meta, key, str);
+        g_free (str);
+        break;
+      }
+    case G_TYPE_INT:
+      {
+        gint val;
+        gchar *str = NULL;
+
+        if (!gst_tag_list_get_int (list, tag, &val))
+          break;
+
+        str = g_strdup_printf ("%d", val);
+        GST_DEBUG_OBJECT (qtmux, "Adding meta tag %s -> %s", key, str);
+        atom_meta_add_str_tag (meta, key, str);
+        g_free (str);
+        break;
+      }
     default:
       /* only string type are supported QTFF metadata */
       g_assert_not_reached ();
@@ -1496,6 +1524,14 @@ static const GstTagToQTMeta tag_matches_mp4_meta[] = {
   {"com.parrot.run.date", GST_TAG_RUN_DATE, gst_qt_mux_add_mp4_meta_tag},
   {"com.parrot.run.id", GST_TAG_RUN_ID, gst_qt_mux_add_mp4_meta_tag},
   {"com.parrot.boot.id", GST_TAG_BOOT_ID, gst_qt_mux_add_mp4_meta_tag},
+
+  /* thermal meta */
+  {"com.parrot.thermal.metaversion", GST_TAG_THERMAL_VERSION,
+    gst_qt_mux_add_mp4_meta_tag},
+  {"com.parrot.thermal.alignment", GST_TAG_THERMAL_ALIGNMENT,
+    gst_qt_mux_add_mp4_meta_tag},
+  {"com.parrot.thermal.scalefactor", GST_TAG_THERMAL_SCALE_FACTOR,
+    gst_qt_mux_add_mp4_meta_tag},
 #endif
 
   {0, NULL,}
@@ -2004,6 +2040,38 @@ gst_qt_mux_prepare_and_send_ftyp (GstQTMux * qtmux)
       return ret;
   }
   return gst_qt_mux_send_ftyp (qtmux, &qtmux->header_size);
+}
+
+/* update trak-flags and handler_name */
+static void
+gst_qt_mux_update_trak_info_on_caps (GstQTPad * qtpad, GstCaps * caps)
+{
+  GstPad *pad = qtpad->collect.pad;
+  GstStructure *structure;
+  const gchar *hdlr_name;
+  guint flags;
+
+  structure = gst_caps_get_structure (caps, 0);
+
+  if (!gst_structure_get_uint (structure, "trak-flags", &flags)) {
+    GST_DEBUG_OBJECT (qtpad, "no 'trak-flags' found in caps, keep default");
+  } else {
+    qtpad->trak->tkhd.header.flags[2] = flags & 0xFF;
+    qtpad->trak->tkhd.header.flags[1] = (flags & 0xFF00 ) >> 8;
+    qtpad->trak->tkhd.header.flags[0] = (flags & 0xFF0000) >> 16;
+  }
+
+  hdlr_name = gst_structure_get_string (structure, "handler-name");
+  if (!hdlr_name)
+    GST_DEBUG_OBJECT (qtpad, "no 'handler-name' found in caps, keep default");
+  else
+    atom_hdlr_set_name (&qtpad->trak->mdia.hdlr, hdlr_name);
+
+  GST_DEBUG_OBJECT (qtpad,
+      "%s pad: trak-flags -> {%u, %u, %u}, handler_name -> %s",
+      GST_PAD_NAME (pad), qtpad->trak->tkhd.header.flags[0],
+      qtpad->trak->tkhd.header.flags[1], qtpad->trak->tkhd.header.flags[2],
+      qtpad->trak->mdia.hdlr.name);
 }
 
 static void
@@ -5165,6 +5233,10 @@ gst_qt_mux_sink_event (GstCollectPads * pads, GstCollectData * data,
       g_assert (collect_pad->set_caps);
 
       ret = collect_pad->set_caps (collect_pad, caps);
+
+      /* update trak information if needed */
+      gst_qt_mux_update_trak_info_on_caps (collect_pad, caps);
+
       gst_event_unref (event);
       event = NULL;
       break;

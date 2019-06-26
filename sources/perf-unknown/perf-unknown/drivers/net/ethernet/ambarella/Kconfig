@@ -1,0 +1,32 @@
+#
+# AMBARELLA network device configuration
+#
+
+config NET_VENDOR_AMBARELLA
+	tristate "Ambarella 10/100/1000 GMAC Ethernet support"
+	depends on ARCH_AMBARELLA
+	select CRC32
+	select PHYLIB
+	select MII
+	help
+	  This driver supports Ambarella 10/100/1000 GMAC Ethernet.
+
+config NET_VENDOR_AMBARELLA_INTEN_TUE
+	bool "Enable Transmit Buffer Unavailable Interrupt"
+	depends on NET_VENDOR_AMBARELLA
+	default n
+	help
+	  Enable ETH_DMA_INTEN_TUE will downgrade the performance in most case,
+	  but you will get a quick response especially in GMII mode.
+
+	  If you are not sure, say N here.
+
+config NET_VENDOR_AMBARELLA_JUMBO_FRAME
+	bool "Enable Jumbo Frame for Amabrella Platform"
+	depends on NET_VENDOR_AMBARELLA
+	default n
+	help
+	  Enable Jumbo Frame for Ambarella Platform, this can promote the perforence
+	  for Gigabit Ethernet.
+
+	  If you are not sure, say N here.

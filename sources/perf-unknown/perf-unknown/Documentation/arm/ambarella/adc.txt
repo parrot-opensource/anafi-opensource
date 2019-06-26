@@ -1,0 +1,176 @@
+
+Copyright (C) 2016-2019, Ambarella, Inc.
+Author: Cao Rongrong <rrcao@ambarella.com>
+
+
+Introduction
+============
+
+An analog-to-digital converter (abbreviated ADC) is a device that uses sampling to
+convert a continuous quantity to a discrete time representation in digital form.
+
+Ambarella SoCs have different ADC channel number, and some SoCs have one ADC
+channel (normally the last ADC channel) dedicated to temperature (T2V) measurment.
+The ADC original sense range is 1.8v, but all channels except for channel0 have
+an linear voltage scaler inside SoC to enlarge the range to 3.3v. So in summary,
+channel0's range is 1.8v, other channels' range can be 3.3v or 1.8v. Please see
+Programmer Manual for details.
+
+ADC used is 12 bit SAR ADC with a programmable sample rate. The ADC clock is
+gclk_adc which is derived from OSC. However, the maximum frequency of gclk_adc
+is 12MHz. Ambarella ADC uses N clock cycles to digitize the sampled input, here
+N is different from process to process, N = 6 for 28nm, N = 20 for 14nm.
+
+Ambarella ADC supports "one-shot" mode and "continous" mode, and can be configured
+to use more than one slot to have each channels using different sampling rate.
+However, the drivers just implemente "continous" mode and use only one slot to
+make life easier, since all channels must be working at the same mode. In other
+words, all of the ADC channels will be working in "continous" mode at same sampling
+rate.
+
+The sampling rate is determined by gclk_adc, the number of used channels and clock
+cycles for one sampling. So sampling rate = gclk_adc/M/N, here M is the number of
+used channels, N is the clock cycles for one sampling.  For example, if gclk_adc
+is 12MHz, two channels are used, and the SoC is 14nm, then the sampling rate is
+12MHz/2/20 = 300Khz.
+
+The formula of ADC is D = V * (2^12 - 1) / R, here D is digital value, V is input
+voltage, R is the range, i.e., 1.8v or 3.3v.
+
+
+
+IIO
+===
+
+Please see:
+   http://events.linuxfoundation.org/sites/events/files/slides/lceu15_baluta.pdf
+   https://wiki.analog.com/software/linux/docs/iio/iio
+
+
+
+Driver Configuration
+====================
+
+Device Drivers  --->
+         [M]  Industrial I/O support  --->
+                  [*]  Enable buffer support within IIO
+                  <*>     Industrial I/O buffering based on kfifo
+                       Analog to digital converters  --->
+                               <M> Ambarella ADC driver
+
+The module should be present in "drivers/iio/adc/ambarella_adc.ko".
+
+
+
+Device Tree
+===========
+
+Please see Documentation/devicetree/bindings/arm/ambarella.txt - 25) - ADC node
+
+
+
+Usage
+=====
+
+On loading the module(ambarella_adc.ko) you can see the IIO device created in sysfs:
+
+root@/#ls -p /sys/bus/iio/devices/iio\:device0/
+buffer/             in_voltage0_enable  in_voltage3_enable  sampling_frequency
+dev                 in_voltage0_raw     in_voltage3_raw     scan_elements/
+events/             in_voltage0_scale   in_voltage3_scale   subsystem
+in_temp4_enable     in_voltage1_enable  name                trigger/
+in_temp4_input      in_voltage1_raw     of_node             uevent
+in_temp4_raw        in_voltage1_scale   power/
+
+channel2 is not used in .dts, so here you cannot see in_voltage2_XXX
+
+sampling_frequency: you can change the sampling rate by this file.
+
+in_voltageX_enable: enable or disable channel X dynamically
+in_voltageX_raw: raw value of the channel X of the ADC
+in_voltageX_scale: scale of the channel X of the ADC
+PS: the real voltage of channel X = in_voltageX_raw * in_voltageX_scale
+
+in_tempX_enable: enable or disable the T2V channel dynamically
+in_tempX_raw: raw value of the T2V channel
+in_tempX_input: centigrade of the T2V channel
+PS: in_tempX_XXX exist only when SoC has T2V channel.
+
+buffer/ scan_elements/ and trigger/: directories used for continuously read
+
+events/: directory used for event monitor
+
+
+A) To read a single ADC channel output from a particular channel:
+       root@ #cat /sys/bus/iio/devices/iio\:device0/in_voltage1_raw
+       896
+       root@/#cat /sys/bus/iio/devices/iio\:device0/in_voltage1_scale
+       0.805664062
+
+       the real voltage is 896 x 0.805664062 = 721.874999552 mV
+
+
+B) To read multi ADC channels output continuously:
+
+   scan_elements directory exposes 3 files per channel:
+      in_voltageX_en: is this channel enabled or disabled for continuously read?
+      in_voltageX_index: index of this channel in the buffer's chunks
+      in_voltageX_type : How the ADC stores its data. Reading this file should
+                         return you a string something like below:
+         root@ #cat /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage1_type
+         le:u12/16>>0
+
+         here:
+         a. le represents the endianness, here little endian
+         b. u is the sign of the value returned. u = unsigned, s = signed
+         c. 12 is the number of relevant bits of information
+         d. 16 is the actual number of bits used to store the datum
+         e. 0 is the number of right shifts needed.
+
+   To read ADC data continuously we need to enable buffer and channels to be used.
+
+   Below commands are used to set up the channels in use (you can enable any
+   combination of the channels you want):
+      root@ #echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage0_en
+      root@ #echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage1_en
+      root@ #echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage3_en
+   Below command is used to set up the buffer length
+      root@ #echo 100 > /sys/bus/iio/devices/iio\:device0/buffer/length
+   Below command is used to enable the capture, and data are exposed in device
+   /dev/iio:device0
+      root@ #echo 1 > /sys/bus/iio/devices/iio\:device0/buffer/enable
+   Below command is used to stop the capture
+      root@ #echo 0 > /sys/bus/iio/devices/iio\:device0/buffer/enable
+
+
+C) Event monitor:
+
+   events directory exposes 3 files per channel:
+      in_voltageX_thresh_either_en: is this channel enabled or disabled for
+                                    threshold event monitor?
+      in_voltageX_thresh_falling_value: the low threshold value to monitor
+      in_voltageX_thresh_rising_value: the high threshold value to monitor
+
+   Below commands are used to set up the threshold values:
+      root@ #echo 100 > /sys/bus/iio/devices/iio\:device0/events/in_voltage1_thresh_falling_value
+      root@ #echo 900 > /sys/bus/iio/devices/iio\:device0/events/in_voltage1_thresh_rising_value
+   Below command is used to enable the threshold monitor, and the event will
+   be exposed in device /dev/iio:device0 once happend:
+      root@ #echo 1 > /sys/bus/iio/devices/iio\:device0/events/in_voltage1_thresh_either_en
+
+   NOTE: 1) the value set to in_voltageX_thresh_falling_value must be less than
+            the value set to in_voltageX_thresh_rising_value
+         2) IMPORTANT: you have to disable the monitor once the event happened,
+            beause no way to clear this event which will bring in many interrupts.
+         3) we don't know whether it is a upper or lower threshold event, so you
+            need to check the channel value if you wants to know.
+
+
+
+Application
+===========
+
+A) Please refer to unit_test/linux/iio
+B) Please refer to https://wiki.analog.com/resources/tools-software/linux-software/libiio
+
+

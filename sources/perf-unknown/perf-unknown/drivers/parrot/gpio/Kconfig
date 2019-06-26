@@ -1,0 +1,12 @@
+
+# GPIO infrastructure and drivers
+#
+
+config USER_GPIO_EXPORT
+	tristate "Parrot user gpio export driver"
+	depends on OF
+	depends on GPIOLIB
+	depends on GPIO_SYSFS
+	help
+	  Allows to export user gpio from device tree and
+	  to create a symlink to the gpio.

@@ -160,8 +160,6 @@ struct _GstSplitMuxSink
 
   gboolean switching_fragment;
 
-  gboolean have_video;
-
   gboolean need_async_start;
   gboolean async_pending;
 };

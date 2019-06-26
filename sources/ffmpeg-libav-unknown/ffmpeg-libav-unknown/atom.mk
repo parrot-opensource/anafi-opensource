@@ -31,7 +31,6 @@ LOCAL_AUTOTOOLS_CONFIGURE_ARGS += \
 # Components options
 LOCAL_AUTOTOOLS_CONFIGURE_ARGS += \
 	--disable-orc \
-	--disable-programs \
 	--disable-avconv \
 	--disable-avplay \
 	--disable-avprobe \
@@ -81,6 +80,14 @@ LOCAL_AUTOTOOLS_CONFIGURE_ARGS += \
 	--enable-muxer=mov
 endif
 
+ifdef CONFIG_FFMPEG_PROGRAMS
+LOCAL_AUTOTOOLS_CONFIGURE_ARGS += \
+	--enable-protocol=file
+else
+LOCAL_AUTOTOOLS_CONFIGURE_ARGS += \
+	--disable-programs
+endif
+
 ifdef CONFIG_FFMPEG_ENABLE_CUVID
 # WARNING: non-free software is enabled in this configuration,
 # the software must not be distributed with cuvid enabled.
@@ -91,7 +98,6 @@ LOCAL_AUTOTOOLS_CONFIGURE_ARGS += \
 	--enable-nvenc \
 	--enable-cuda \
 	--enable-cuvid \
-	--enable-libnpp \
 	--enable-nonfree \
 	--extra-cflags=-I/usr/local/cuda/include \
 	--extra-ldflags=-L/usr/local/cuda/lib64

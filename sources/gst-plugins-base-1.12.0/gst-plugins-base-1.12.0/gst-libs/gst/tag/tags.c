@@ -259,6 +259,61 @@ gst_tag_register_tags_internal (gpointer unused)
           " total number of photos in the serie to which belongs the photo."),
       NULL);
 
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_CALIB_R, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, _("thermal-calib-r"), _("thermal calibration R"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_CALIB_B, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, _("thermal-calib-b"), _("thermal calibration B"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_CALIB_F, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, _("thermal-calib-f"), _("thermal calibration F"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_CALIB_O, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, _("thermal-calib-o"), _("thermal calibration O"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_CALIB_TAU_WIN,
+      GST_TAG_FLAG_META, G_TYPE_DOUBLE, _("thermal-calib-tauwin"),
+      _("thermal calibration tau win"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_CALIB_TWIN, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, _("thermal-calib-twin"), _("thermal calibration twin"),
+      NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_CALIB_TBG, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, _("thermal-calib-tbg"), _("thermal calibration tbg"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_CALIB_EMISSIVITY,
+      GST_TAG_FLAG_META, G_TYPE_DOUBLE, _("thermal-calib-emissivity"),
+      _("thermal calibration emissivity"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_YAW,
+      GST_TAG_FLAG_META, G_TYPE_FLOAT, _("thermal-opt-center-diff-yaw"),
+      _("thermal optical center diff yaw"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_PITCH,
+      GST_TAG_FLAG_META, G_TYPE_FLOAT, _("thermal-opt-center-diff-pitch"),
+      _("thermal optical center diff pitch"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_ROLL,
+      GST_TAG_FLAG_META, G_TYPE_FLOAT, _("thermal-opt-center-diff-roll"),
+      _("thermal optical center diff roll"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_SCALING_FACTOR,
+      GST_TAG_FLAG_META, G_TYPE_DOUBLE, _("thermal-scaling-factor"),
+      _("thermal scaling factor"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_RWIN, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, ("thermal-reflection-window"),
+      _("thermal reflection window"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_TSENSOR, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, ("thermal-sensor-temp"),
+      _("thermal sensor temperature"), NULL);
+
+  gst_tag_register_static (GST_TAG_PARROT_THERMAL_THOUSING, GST_TAG_FLAG_META,
+      G_TYPE_DOUBLE, ("thermal-housing-temp"),
+      _("thermal housing temperature"), NULL);
+
   gst_tag_register_static (GST_TAG_DRONE_ROLL, GST_TAG_FLAG_META,
       G_TYPE_FLOAT, _("drone-roll"), _("Drone roll angle in NED"), NULL);
 

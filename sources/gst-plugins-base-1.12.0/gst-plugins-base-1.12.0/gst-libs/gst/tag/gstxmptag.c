@@ -973,7 +973,7 @@ deserialize_tiff_chroma_positioning (XmpTag * xmptag, GstTagList * taglist,
       return;
     }
 
-    if (value != 1 || value != 2) {
+    if (value != 1 && value != 2) {
       GST_WARNING ("Invalid tiff:YCbCrPositioning tag %u "
           "(accepted values: 1 or 2), ignoring", value);
       return;
@@ -1079,7 +1079,10 @@ _init_xmp_tag_map (gpointer user_data)
   /* xap (xmp) schema */
   schema = gst_xmp_schema_new ();
   _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_USER_RATING,
-      "xmp:Rating", GstXmpTagTypeSimple, NULL, deserialize_xmp_rating);
+      "xap:Rating", GstXmpTagTypeSimple, NULL, deserialize_xmp_rating);
+  xmpinfo = gst_xmp_tag_create_compound (GST_TAG_DATE_TIME,
+      "xap:CreateDate", "xap:ModifyDate", NULL, NULL, NULL);
+  _gst_xmp_schema_add_mapping (schema, xmpinfo);
   _gst_xmp_add_schema ("xap", schema);
 
   /* tiff */
@@ -1242,6 +1245,41 @@ _init_xmp_tag_map (gpointer user_data)
       "drone-parrot:PhotoCount", GstXmpTagTypeSimple, NULL, NULL);
   _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_CAPTURING_TS,
       "drone-parrot:CaptureTsUs", GstXmpTagTypeSimple, NULL, NULL);
+
+  /* Parrot thermal */
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_CALIB_R,
+      "drone-parrot:FLIR_CalibR", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_CALIB_B,
+      "drone-parrot:FLIR_CalibB", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_CALIB_F,
+      "drone-parrot:FLIR_CalibF", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_CALIB_O,
+      "drone-parrot:FLIR_CalibO", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_CALIB_TAU_WIN,
+      "drone-parrot:FLIR_CalibTauWin", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_CALIB_TWIN,
+      "drone-parrot:FLIR_CalibTWin", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_CALIB_TBG,
+      "drone-parrot:FLIR_CalibTBg", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_CALIB_EMISSIVITY,
+      "drone-parrot:FLIR_CalibEmissivity", GstXmpTagTypeSimple, NULL, NULL);
+
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_YAW,
+      "drone-parrot:FLIR_OpticalCenterDiffYaw", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_PITCH,
+      "drone-parrot:FLIR_OpticalCenterDiffPitch", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_ROLL,
+      "drone-parrot:FLIR_OpticalCenterDiffRoll", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_SCALING_FACTOR,
+      "drone-parrot:FLIR_ScalingFactor", GstXmpTagTypeSimple, NULL, NULL);
+
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_RWIN,
+      "drone-parrot:Rwin", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_TSENSOR,
+      "drone-parrot:TSensor", GstXmpTagTypeSimple, NULL, NULL);
+  _gst_xmp_schema_add_simple_mapping (schema, GST_TAG_PARROT_THERMAL_THOUSING,
+      "drone-parrot:THousing", GstXmpTagTypeSimple, NULL, NULL);
+
   _gst_xmp_add_schema ("drone-parrot", schema);
 
   return NULL;

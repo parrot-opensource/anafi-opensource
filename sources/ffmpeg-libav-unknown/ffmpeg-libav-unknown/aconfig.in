@@ -27,3 +27,8 @@ config FFMPEG_MOV_FORMAT
         prompt "enable MOV muxer/demuxer"
         bool
         default n
+
+config FFMPEG_PROGRAMS
+        prompt "enable ffmpeg programs: ffmpeg, ffprobe, ..."
+        bool
+        default n

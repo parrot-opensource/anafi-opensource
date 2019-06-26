@@ -1191,6 +1191,8 @@ void atom_meta_add_str_tag (AtomMETA *meta, const gchar * key, const gchar *valu
 AtomTREF * atom_tref_new (void);
 void atom_tref_add_entry (AtomTREF * tref, guint32 fourcc, guint32 sample);
 
+void atom_hdlr_set_name (AtomHDLR * hdlr, const char * name);
+
 #define GST_QT_MUX_DEFAULT_TAG_LANGUAGE   "und" /* undefined/unknown */
 guint16  language_code               (const char * lang);
 

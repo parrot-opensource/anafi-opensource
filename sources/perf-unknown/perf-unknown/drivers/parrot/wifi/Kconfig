@@ -1,0 +1,8 @@
+config ENABLE_WIRELESS_EXT
+	   bool "Wireless extensions"
+	   default n
+	   select WEXT_CORE
+	   select WEXT_PROC
+	   select WEXT_SPY
+	   select WEXT_PRIV
+	   select WIRELESS_EXT

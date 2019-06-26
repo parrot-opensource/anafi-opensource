@@ -668,7 +668,8 @@ gst_jif_mux_recombine_image (GstJifMux * self, GstBuffer ** new_buf,
 
   /* copy buffer metadata */
   gst_buffer_copy_into (buf, old_buf,
-      GST_BUFFER_COPY_FLAGS | GST_BUFFER_COPY_TIMESTAMPS, 0, -1);
+      GST_BUFFER_COPY_FLAGS | GST_BUFFER_COPY_TIMESTAMPS | GST_BUFFER_COPY_META,
+      0, -1);
 
   /* memcopy markers */
   gst_buffer_map (buf, &map, GST_MAP_WRITE);

@@ -1,0 +1,52 @@
+menu "Misc Parrot drivers"
+
+config MISC_PBT
+	bool "Pbt"
+	depends on ARCH_AMBARELLA_AMBALINK
+	help
+	  Watch if ThreadX crashed and dump backtrace
+
+config MISC_PBT_PING_INTERVAL_MS
+	int "Pbt ping interval (ms)"
+	default 1000
+	depends on MISC_PBT
+	help
+	  Delay (msec) between each ThreadX ping request
+
+config MISC_PBT_PING_TIMEOUT_MS
+	int "Pbt ping timeout (ms)"
+	default 5000
+	depends on MISC_PBT
+	help
+	  ThreadX is considered to be crashed after this timeout, and backtrace
+	  will be available by reading the char device.
+
+config MISC_PGIMBAL
+	#THREADX-DEPENDS: CONFIG_PARROT_GIMBAL=y
+	tristate "Parrot Gimbal"
+	help
+	  This driver allows to share low frequency gimbal data with ThreadX.
+
+config MISC_PSFS
+	#THREADX-DEPENDS: CONFIG_PARROT_PSFS=y
+	tristate "Parrot Shared Filesystem"
+	help
+	  This driver allows to share local filesystems with a remote oprating
+	  system.
+
+config MISC_PSHM
+	tristate "Pshm"
+	help
+	  Shared memory management between ThreadX and Linux
+
+config MISC_PTEST_CLOCK
+	tristate "Ptest clock"
+	help
+	  Linux part to verify linux/threadx clock synchronisation
+
+config MISC_PTEST_OOPS
+	tristate "Ptest oops"
+	help
+	  Linux part to verify oops dump
+
+endmenu

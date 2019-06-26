@@ -101,7 +101,7 @@ enum
 static guint signals[SIGNAL_LAST];
 
 static GstStaticPadTemplate video_sink_template =
-GST_STATIC_PAD_TEMPLATE ("video",
+GST_STATIC_PAD_TEMPLATE ("video_%u",
     GST_PAD_SINK,
     GST_PAD_REQUEST,
     GST_STATIC_CAPS_ANY);
@@ -1730,7 +1730,6 @@ gst_splitmux_sink_request_new_pad (GstElement * element,
   GstElement *q;
   GstPad *q_sink = NULL, *q_src = NULL;
   gchar *gname;
-  gboolean is_video = FALSE;
   MqStreamCtx *ctx;
 
   GST_DEBUG_OBJECT (element, "templ:%s, name:%s", templ->name_template, name);
@@ -1740,14 +1739,12 @@ gst_splitmux_sink_request_new_pad (GstElement * element,
     goto fail;
 
   if (templ->name_template) {
-    if (g_str_equal (templ->name_template, "video")) {
-      if (splitmux->have_video)
-        goto already_have_video;
+    if (g_str_equal (templ->name_template, "video_%u")) {
 
       /* FIXME: Look for a pad template with matching caps, rather than by name */
       mux_template =
           gst_element_class_get_pad_template (GST_ELEMENT_GET_CLASS
-          (splitmux->muxer), "video_%u");
+          (splitmux->muxer), templ->name_template);
 
       /* Fallback to find sink pad templates named 'video' (flvmux) */
       if (!mux_template) {
@@ -1755,7 +1752,6 @@ gst_splitmux_sink_request_new_pad (GstElement * element,
             gst_element_class_get_pad_template (GST_ELEMENT_GET_CLASS
             (splitmux->muxer), "video");
       }
-      is_video = TRUE;
       name = NULL;
     } else {
       mux_template =
@@ -1770,6 +1766,7 @@ gst_splitmux_sink_request_new_pad (GstElement * element,
         name = NULL;
       }
     }
+
     if (mux_template == NULL) {
       /* Fallback to find sink pad templates named 'sink_%d' (mpegtsmux) */
       mux_template =
@@ -1783,9 +1780,7 @@ gst_splitmux_sink_request_new_pad (GstElement * element,
   if (res == NULL)
     goto fail;
 
-  if (is_video)
-    gname = g_strdup ("video");
-  else if (name == NULL)
+  if (name == NULL)
     gname = gst_pad_get_name (res);
   else
     gname = g_strdup (name);
@@ -1824,7 +1819,7 @@ gst_splitmux_sink_request_new_pad (GstElement * element,
       GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM | GST_PAD_PROBE_TYPE_EVENT_FLUSH,
       (GstPadProbeCallback) handle_mq_output, ctx, (GDestroyNotify)
       _pad_block_destroy_src_notify);
-  if (is_video && splitmux->reference_ctx != NULL) {
+  if (splitmux->reference_ctx != NULL) {
     splitmux->reference_ctx->is_reference = FALSE;
     splitmux->reference_ctx = NULL;
   }
@@ -1851,8 +1846,6 @@ gst_splitmux_sink_request_new_pad (GstElement * element,
 
   g_free (gname);
 
-  if (is_video)
-    splitmux->have_video = TRUE;
 
   gst_pad_set_active (res, TRUE);
   gst_element_add_pad (element, res);
@@ -1867,10 +1860,6 @@ fail:
     gst_object_unref (q_sink);
   if (q_src)
     gst_object_unref (q_src);
-  return NULL;
-already_have_video:
-  GST_DEBUG_OBJECT (splitmux, "video sink pad already requested");
-  GST_SPLITMUX_UNLOCK (splitmux);
   return NULL;
 }
 
@@ -1910,11 +1899,6 @@ gst_splitmux_sink_release_pad (GstElement * element, GstPad * pad)
     gst_element_release_request_pad (splitmux->muxer, muxpad);
     gst_object_unref (muxpad);
   }
-
-  if (GST_PAD_PAD_TEMPLATE (pad) &&
-      g_str_equal (GST_PAD_TEMPLATE_NAME_TEMPLATE (GST_PAD_PAD_TEMPLATE
-              (pad)), "video"))
-    splitmux->have_video = FALSE;
 
   gst_element_remove_pad (element, pad);
 

@@ -1,0 +1,124 @@
+/*
+ * Copyright (C) 2013 Ambarella,Inc. - http://www.ambarella.com/
+ * Author: Cao Rongrong <rrcao@ambarella.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+/dts-v1/;
+
+/include/ "ambarella-h22-ambalink.dtsi"
+
+/ {
+	model = "Ambarella H22EVK K2 Board";
+	compatible = "ambarella,h22evk_k2", "ambarella,s5l";
+
+	chosen {
+	};
+
+	apb@e8000000 {
+		uart0: uart@e8005000 {
+			status = "disabled";
+			/* amb,tx-fifo-fix; */
+		};
+
+		i2c0: i2c@e8003000 {
+			compatible = "threadx,i2c";
+			status = "ok";
+		};
+
+		i2c1: i2c@e8001000 {
+			status = "disabled";
+		};
+
+		i2c2: i2c@e8007000 {
+			status = "okay";
+		};
+
+		rtc@e8015000 {
+			status = "disabled";
+		};
+
+		pinctrl: pinctrl@e8009000 {
+			gpio: gpio@0 {
+				amb,banks_irq_mask = <0x1>; /* enable only group0 */
+				amb,banks_irq_affinity = "2", "7", "7", "7", "7"; /* group 0 on cpu1 */
+			};
+		};
+	};
+
+	ahb@e0000000 {
+		dma: dma@e0005000 {
+			/* enable dma if you need uart dma. */
+			status = "disabled";
+			amb,dma-startchannel = <2>;
+		};
+
+		uart1: uart@e0032000 {
+			status = "ok";
+			amb,msr-used;   /* use Modem Status Register */
+			/* amb,txdma-used; */
+			/* amb,rxdma-used; */
+			/* dmas = <&dma 8>, <&dma 9>; */
+			/* dma-names = "tx", "rx"; */
+		};
+
+		uart2: uart@e0033000 {
+			status = "disabled";
+			amb,msr-used;	/* use Modem Status Register */
+			/* amb,txdma-used; */
+			/* amb,rxdma-used; */
+			/* dmas = <&dma 12>, <&dma 13>; */
+			/* dma-names = "tx", "rx"; */
+		};
+
+		sdmmc0@e0002000 {
+			status = "disabled";
+			pwr-gpios = <&gpio 111 0x1>;
+			v18-gpios = <&gpio 0 0x1>;
+			amb,detail-delay = <0x6001>; /* ThreadX default value
+			                             * A new delay must be determined with sd_shmoo */
+		};
+
+		sdmmc2@e001f000 {
+			/* pwr-gpios = <&gpio 112 0x1>; */
+			/* v18-gpios = <&gpio 7 0x1>; */
+			amb,rct-regmap = <&rct_syscon>;
+			keep-power-in-suspend;
+			no-1-8-v;
+			max-frequency = <50000000>;
+		};
+
+		mac0: ethernet@e000e000 {
+			phy@0 {
+				reg = <0>;
+				amb,clk_invert;
+
+			};
+		};
+
+		spi0: spi@e0020000 {
+			status = "disabled";
+			cs-gpios = <&gpio 38 0>;
+
+			ambvin0@0 {
+				compatible = "ambarella,ambvin";
+				reg = <0>;
+				spi-max-frequency = <1000000>;
+				spi-cpha;
+				spi-cpol;
+			};
+		};
+	};
+
+	rct@ec170000 {
+		usbphy: usbphy@ec170050 {
+			/* high will trigger the ocp interrupt */
+			amb,ocp-polarity = <0>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&usb_host0_pins>;
+		};
+	};
+};
+

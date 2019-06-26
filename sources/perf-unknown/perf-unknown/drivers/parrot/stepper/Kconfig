@@ -1,0 +1,4 @@
+config AMBA_STEPPER_US
+	tristate "Ambarella Stepper driver for US"
+	help
+	  This driver is dedicated to sending a fixed number of pulses on US Tx

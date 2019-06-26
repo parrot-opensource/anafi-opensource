@@ -277,6 +277,7 @@ EXIF_DESERIALIZATION_FUNC (add_to_pending_tags);
  * not yet handled */
 
 /* exif tag numbers */
+#define EXIF_TAG_GPS_VERSION_ID 0x0
 #define EXIF_TAG_GPS_LATITUDE_REF 0x1
 #define EXIF_TAG_GPS_LATITUDE 0x2
 #define EXIF_TAG_GPS_LONGITUDE_REF 0x3
@@ -1673,6 +1674,20 @@ write_exif_ifd (const GstTagList * taglist, guint byte_order,
 
   /* write tag number as 0 */
   handled &= gst_byte_writer_put_uint16_le (&writer.tagwriter, 0);
+
+  /* special case for gps ifd
+   * write GPSVersionID first then other tags */
+  if (tag_map == tag_map_gps) {
+    guint32 offset;
+
+    GST_WRITE_UINT8 ((guint8 *) &offset, 2);
+    GST_WRITE_UINT8 ((guint8 *) &offset + 1, 3);
+    GST_WRITE_UINT8 ((guint8 *) &offset + 2, 0);
+    GST_WRITE_UINT8 ((guint8 *) &offset + 3, 0);
+
+    gst_exif_writer_write_tag_header (&writer, EXIF_TAG_GPS_VERSION_ID,
+        EXIF_TYPE_BYTE, 4, offset, &offset);
+  }
 
   /* write both tag headers and data
    * in ascending id order */

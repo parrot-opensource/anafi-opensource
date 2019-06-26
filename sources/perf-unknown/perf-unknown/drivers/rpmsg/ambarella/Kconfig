@@ -1,0 +1,15 @@
+
+menu "Ambarella RPMSG Host Programs"
+depends on AMBARELLA_RPROC
+
+source "drivers/rpmsg/ambarella/host/echo/Kconfig"
+
+endmenu
+
+menu "Ambarella RPMSG Client Programs"
+depends on RPCLNT_SUPPORT
+
+source "drivers/rpmsg/ambarella/clnt/echo/Kconfig"
+
+endmenu
+

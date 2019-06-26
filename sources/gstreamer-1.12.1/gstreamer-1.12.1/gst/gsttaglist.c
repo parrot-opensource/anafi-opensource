@@ -428,6 +428,17 @@ _priv_gst_tag_initialize (void)
       G_TYPE_STRING, _("run-date"), _("Run date"), NULL);
   gst_tag_register_static (GST_TAG_BOOT_ID, GST_TAG_FLAG_META,
       G_TYPE_STRING, _("boot-id"), _("Boot ID"), NULL);
+
+  /* thermal meta */
+  gst_tag_register_static (GST_TAG_THERMAL_SCALE_FACTOR, GST_TAG_FLAG_META,
+      G_TYPE_FLOAT, _("thermal-scale-factor"), _("Thermal scale factor"),
+      NULL);
+  gst_tag_register_static (GST_TAG_THERMAL_VERSION, GST_TAG_FLAG_META,
+      G_TYPE_INT, _("thermal-version"), _("Thermal version"),
+      NULL);
+  gst_tag_register_static (GST_TAG_THERMAL_ALIGNMENT, GST_TAG_FLAG_META,
+      G_TYPE_STRING, _("thermal-alignment"), _("Thermal alignment"),
+      NULL);
 }
 
 /**

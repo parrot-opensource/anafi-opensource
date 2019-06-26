@@ -627,6 +627,112 @@ G_BEGIN_DECLS
  * Type of image contained in an image tag (specified as "image-type" field in
  * the info structure in the image's #GstSample)
  */
+
+/**
+ * GST_TAG_PARROT_THERMAL_CALIB_R:
+ *
+ * Thermal calibration data R
+ */
+#define GST_TAG_PARROT_THERMAL_CALIB_R "thermal-calib-r"
+
+/**
+ * GST_TAG_PARROT_THERMAL_CALIB_B:
+ *
+ * Thermal calibration data B
+ */
+#define GST_TAG_PARROT_THERMAL_CALIB_B "thermal-calib-b"
+
+/**
+ * GST_TAG_PARROT_THERMAL_CALIB_F:
+ *
+ * Thermal calibration data F
+ */
+#define GST_TAG_PARROT_THERMAL_CALIB_F "thermal-calib-f"
+
+/**
+ * GST_TAG_PARROT_THERMAL_CALIB_O:
+ *
+ * Thermal calibration data O
+ */
+#define GST_TAG_PARROT_THERMAL_CALIB_O "thermal-calib-o"
+
+/**
+ * GST_TAG_PARROT_THERMAL_CALIB_TAU_WIN:
+ *
+ * Thermal calibration data Tau win
+ */
+#define GST_TAG_PARROT_THERMAL_CALIB_TAU_WIN "thermal-calib-tauwin"
+
+/**
+ * GST_TAG_PARROT_THERMAL_CALIB_TWIN:
+ *
+ * Thermal calibration data Tau Twin
+ */
+#define GST_TAG_PARROT_THERMAL_CALIB_TWIN "thermal-calib-twin"
+
+/**
+ * GST_TAG_PARROT_THERMAL_CALIB_TBG:
+ *
+ * Thermal calibration data Tau TBg
+ */
+#define GST_TAG_PARROT_THERMAL_CALIB_TBG "thermal-calib-tbg"
+
+/**
+ * GST_TAG_PARROT_THERMAL_CALIB_EMISSIVITY
+ *
+ * Thermal calibration data emissivity
+ */
+#define GST_TAG_PARROT_THERMAL_CALIB_EMISSIVITY "thermal-calib-emissivity"
+
+/**
+ * GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_YAW
+ *
+ * Thermal optical center diff Yaw
+ */
+#define GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_YAW "thermal-opt-center-diff-yaw"
+
+/**
+ * GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_PITCH
+ *
+ * Thermal optical center diff Pitch
+ */
+#define GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_PITCH "thermal-opt-center-diff-pitch"
+
+/**
+ * GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_ROLL
+ *
+ * Thermal optical center diff Roll
+ */
+#define GST_TAG_PARROT_THERMAL_OPTICAL_CENTER_DIFF_ROLL "thermal-opt-center-diff-roll"
+
+/**
+ * GST_TAG_PARROT_THERMAL_SCALING_FACTOR
+ *
+ * Thermal calibration scaling factor
+ */
+#define GST_TAG_PARROT_THERMAL_SCALING_FACTOR "thermal-scaling-factor"
+
+/**
+ * GST_TAG_PARROT_THERMAL_RWIN
+ *
+ * Thermal reflection window
+ */
+#define GST_TAG_PARROT_THERMAL_RWIN "thermal-rwin"
+
+/**
+ * GST_TAG_PARROT_THERMAL_TSENSOR
+ *
+ * Thermal sensor temperature
+ */
+#define GST_TAG_PARROT_THERMAL_TSENSOR "thermal-tsensor"
+
+/**
+ * GST_TAG_PARROT_THERMAL_THOUSING
+ *
+ * Thermal housing temperature
+ */
+#define GST_TAG_PARROT_THERMAL_THOUSING "thermal-thousing"
+
 /* Note: keep in sync with register_tag_image_type_enum() */
 typedef enum {
   GST_TAG_IMAGE_TYPE_NONE = -1,

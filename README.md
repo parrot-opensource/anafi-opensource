@@ -1,5 +1,5 @@
 Open Source Software used in **Parrot Anafi**.  
-Firmware version: **1.4.1**  
+Firmware version: **1.5.4**  
 Unless stated otherwise, later versions of the firmware
 use these same software modules.
 
@@ -33,6 +33,7 @@ You can download Open Source Archives from following table:
 |GPL2|[lttng-modules](sources/lttng-modules-unknown)
 |GPL2|[lttng-tools](sources/lttng-tools-2.8.2)
 |GPL2|[memtester2](sources/memtester2-unknown)
+|GPL2|[perf](sources/perf-unknown)
 |GPL2|[udevadm](sources/udevadm-164)
 |GPL2|[udevd](sources/udevd-164)
 |GPL2|[ulogger-kernel](sources/ulogger-kernel-unknown)
