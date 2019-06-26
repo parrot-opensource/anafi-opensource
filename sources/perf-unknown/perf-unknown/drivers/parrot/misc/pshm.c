@@ -44,7 +44,6 @@ struct pshm_drvdata {
 	int			err;
 	struct mutex		lock;
 	wait_queue_head_t	wait_rpmsg;
-	wait_queue_head_t	wait_state_idle;
 	struct pshm_meminfo	current_mem;
 	u32			current_seqnum;
 	u32			next_seqnum;
@@ -62,20 +61,16 @@ static int pshm_rpmsg_cb(struct rpmsg_device *rpdev, void *data, int len,
 		return -EINVAL;
 	}
 
-	mutex_lock(&pshm_data->lock);
-
 	/* Ignore received message if not in requested state */
 	if (pshm_data->state != PSHM_STATE_REQUESTED) {
 		dev_warn(&rpdev->dev, "%s: received unknown rpmsg\n",
                          __func__);
-		mutex_unlock(&pshm_data->lock);
 		return -EINVAL;
 	}
 	if (rpmsg->seqnum != pshm_data->current_seqnum) {
 		dev_warn(&rpdev->dev, "%s: rpmsg seqnum mismatch, expected %u,"
 			 " received %u\n", __func__, pshm_data->current_seqnum,
 			 rpmsg->seqnum);
-		mutex_unlock(&pshm_data->lock);
 		return -EINVAL;
 	}
 
@@ -103,8 +98,6 @@ static int pshm_rpmsg_cb(struct rpmsg_device *rpdev, void *data, int len,
 	default:
 		break;
 	}
-
-	mutex_unlock(&pshm_data->lock);
 
 	return 0;
 }
@@ -158,33 +151,14 @@ static long pshm_ioctl(struct file *filep, unsigned int req,
 		mutex_lock(&pshm_data->lock);
 		if (copy_from_user(&rpmsg.meminfo, (void __user *)arg,
 				   sizeof(struct pshm_meminfo))) {
-			mutex_unlock(&pshm_data->lock);
-			return -EFAULT;
+			ret = -EFAULT;
+			goto error;
 		}
-
 
 		if (!pshm_data->rp_device) {
-			mutex_unlock(&pshm_data->lock);
-			return -ENODEV;
+			ret = -ENODEV;
+			goto error;
 		}
-
-		if (pshm_data->state != PSHM_STATE_IDLE) {
-			mutex_unlock(&pshm_data->lock);
-
-			/* Wait a bit instead of returning immediately -EBUSY */
-			ret = wait_event_interruptible_timeout(
-				pshm_data->wait_state_idle,
-				pshm_data->state == PSHM_STATE_IDLE,
-				500);
-
-			/* Current request is taking to long time, abort */
-			if (ret == 0 || ret < 0)
-				return -EBUSY;
-
-			/* Driver is now available */
-			mutex_lock(&pshm_data->lock);
-		}
-
 
 		pshm_data->state = PSHM_STATE_REQUESTED;
 		if (req == PSHM_IOCTL_CREATE || req == PSHM_IOCTL_CREATE_2) {
@@ -197,8 +171,8 @@ static long pshm_ioctl(struct file *filep, unsigned int req,
 
 			if (rpmsg.meminfo.cache < 0 ||
 			    rpmsg.meminfo.cache >= PSHM_CACHE_MODE_COUNT) {
-				mutex_unlock(&pshm_data->lock);
-				return -EINVAL;
+				ret = -EINVAL;
+				goto error;
 			}
 
 			dev_dbg(pshm_data->dev,
@@ -220,7 +194,6 @@ static long pshm_ioctl(struct file *filep, unsigned int req,
 		 */
 		while (pshm_data->state != PSHM_STATE_ANSWERED &&
 				pshm_data->state != PSHM_STATE_FAILED) {
-			mutex_unlock(&pshm_data->lock);
 
 			ret = wait_event_interruptible_timeout(
 				pshm_data->wait_rpmsg,
@@ -228,39 +201,33 @@ static long pshm_ioctl(struct file *filep, unsigned int req,
 					pshm_data->state == PSHM_STATE_FAILED,
 				5000);
 
-			mutex_lock(&pshm_data->lock);
 
 			/* In case of timeout/interrupt while waiting for
 			 * ThreadX, return to the idle state
 			 */
 			if (ret <= 0) {
-				pshm_data->state = PSHM_STATE_IDLE;
-				wake_up_interruptible(&pshm_data->wait_state_idle);
-				mutex_unlock(&pshm_data->lock);
-				return ret ? -ERESTARTSYS : -ETIMEDOUT;
+				ret = ret ? -ERESTARTSYS : -ETIMEDOUT;
+				goto error;
 			}
 		}
 
 		if (pshm_data->state == PSHM_STATE_FAILED) {
-			pshm_data->state = PSHM_STATE_IDLE;
-			wake_up_interruptible(&pshm_data->wait_state_idle);
 			ret = pshm_data->err;
-			mutex_unlock(&pshm_data->lock);
-			return ret;
+			goto error;
 		}
 
 		if (copy_to_user((void __user *)arg, &pshm_data->current_mem,
 				 sizeof(struct pshm_meminfo))) {
-			mutex_unlock(&pshm_data->lock);
-			return -EFAULT;
+			ret = -EFAULT;
+			goto error;
 		}
 
+		ret = 0;
+error:
 		/* Return to idle state to be ready to handle future requests */
 		pshm_data->state = PSHM_STATE_IDLE;
-		wake_up_interruptible(&pshm_data->wait_state_idle);
 		mutex_unlock(&pshm_data->lock);
-
-		break;
+		return ret;
 	default:
 		dev_err(pshm_data->dev, "unknown command\n");
 	}
@@ -290,7 +257,6 @@ static int __init pshm_init(void)
 	mutex_init(&pshm_data->lock);
 	atomic_set(&pshm_data->opened, 0);
 	init_waitqueue_head(&pshm_data->wait_rpmsg);
-	init_waitqueue_head(&pshm_data->wait_state_idle);
 	pshm_data->dev = pshm_data->misc_dev.this_device;
 	pshm_data->state = PSHM_STATE_IDLE;
 
